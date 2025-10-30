@@ -29,12 +29,24 @@ interface ExtractedData {
   }>;
 }
 
+interface FlattenedRow {
+  originalIndex: number;
+  name: string;
+  designation: string;
+  email?: string;
+  skill: string;
+  proficiency: string;
+  evidence: string;
+  impact: string;
+}
+
 const AITools = () => {
   const [eventName, setEventName] = useState("");
   const [meetingNotes, setMeetingNotes] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
+  const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const { toast } = useToast();
 
   const handleExtract = async () => {
@@ -82,9 +94,44 @@ const AITools = () => {
       }
 
       setExtractedData(data.extractedData);
+      
+      // Flatten data: each competency becomes a row
+      const flattened: FlattenedRow[] = [];
+      data.extractedData.forEach((person: ExtractedData, index: number) => {
+        if (person.competencies.length === 0) {
+          // Person with no competencies still gets one row
+          flattened.push({
+            originalIndex: index,
+            name: person.name,
+            designation: person.designation,
+            email: person.email,
+            skill: "",
+            proficiency: "",
+            evidence: "",
+            impact: "",
+          });
+        } else {
+          // Each competency gets its own row
+          person.competencies.forEach((comp) => {
+            flattened.push({
+              originalIndex: index,
+              name: person.name,
+              designation: person.designation,
+              email: person.email,
+              skill: comp.skill,
+              proficiency: comp.proficiency,
+              evidence: comp.evidence,
+              impact: comp.impact,
+            });
+          });
+        }
+      });
+      
+      setFlattenedRows(flattened);
+      
       toast({
         title: "Extraction complete!",
-        description: `Found ${data.extractedData.length} attendees with competencies`,
+        description: `Found ${data.extractedData.length} attendees with ${flattened.length} total competencies`,
       });
     } catch (error) {
       console.error("Error extracting data:", error);
@@ -98,13 +145,18 @@ const AITools = () => {
     }
   };
 
-  const handleEmailChange = (index: number, email: string) => {
-    const updated = [...extractedData];
-    updated[index].email = email;
-    setExtractedData(updated);
+  const handleEmailChange = (rowIndex: number, email: string) => {
+    const updated = [...flattenedRows];
+    updated[rowIndex].email = email;
+    setFlattenedRows(updated);
+    
+    // Update original data
+    const updatedOriginal = [...extractedData];
+    updatedOriginal[updated[rowIndex].originalIndex].email = email;
+    setExtractedData(updatedOriginal);
   };
 
-  const sendWebhook = async (data: ExtractedData | ExtractedData[]) => {
+  const sendWebhook = async (rowIndex?: number) => {
     if (!webhookUrl.trim()) {
       toast({
         title: "Webhook URL required",
@@ -114,9 +166,11 @@ const AITools = () => {
       return;
     }
 
+    // Determine which rows to send
+    const rowsToSend = rowIndex !== undefined ? [flattenedRows[rowIndex]] : flattenedRows;
+    
     // Validate emails
-    const dataArray = Array.isArray(data) ? data : [data];
-    const missingEmails = dataArray.filter(person => !person.email?.trim());
+    const missingEmails = rowsToSend.filter(row => !row.email?.trim());
     
     if (missingEmails.length > 0) {
       toast({
@@ -133,7 +187,10 @@ const AITools = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ eventName, data }),
+        body: JSON.stringify({ 
+          eventName, 
+          data: rowsToSend 
+        }),
       });
 
       if (!response.ok) throw new Error("Webhook failed");
@@ -252,87 +309,85 @@ Tom Brown, Marketing Manager`;
               </Button>
             </div>
 
-            {extractedData.length > 0 && (
+            {flattenedRows.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold">Extracted Data</h3>
                   <Button
-                    onClick={() => sendWebhook(extractedData)}
+                    onClick={() => sendWebhook()}
                     variant="secondary"
                   >
                     Send All to Webhook
                   </Button>
                 </div>
-                <div className="space-y-6">
-                  {extractedData.map((person, index) => (
-                    <Card key={index} className="p-4 space-y-4">
-                      <div className="border rounded-lg overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-16">No.</TableHead>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Designation</TableHead>
-                              <TableHead>Email</TableHead>
-                              <TableHead className="text-center w-32">Action</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">{index + 1}</TableCell>
-                              <TableCell>{person.name}</TableCell>
-                              <TableCell>{person.designation}</TableCell>
-                              <TableCell>
-                                <Input
-                                  placeholder="Enter email"
-                                  value={person.email || ""}
-                                  onChange={(e) => handleEmailChange(index, e.target.value)}
-                                  className="max-w-xs"
-                                />
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <Button
-                                  size="sm"
-                                  onClick={() => sendWebhook(person)}
-                                  variant="outline"
-                                >
-                                  Send Row
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-
-                      {person.competencies.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-muted-foreground">Competencies:</h4>
-                          <div className="grid gap-3">
-                            {person.competencies.map((comp, compIndex) => (
-                              <div key={compIndex} className="p-3 rounded-lg bg-muted/50 space-y-2">
-                                <div className="flex items-start justify-between gap-4">
-                                  <span className="font-semibold text-sm">{comp.skill}</span>
-                                  <Badge className={getProficiencyColor(comp.proficiency)}>
-                                    {comp.proficiency}
-                                  </Badge>
-                                </div>
-                                <div className="space-y-1 text-xs">
-                                  <div>
-                                    <span className="font-medium">Evidence: </span>
-                                    <span className="text-muted-foreground">{comp.evidence}</span>
-                                  </div>
-                                  <div>
-                                    <span className="font-medium">Impact: </span>
-                                    <span className="text-muted-foreground">{comp.impact}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </Card>
-                  ))}
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">No.</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Designation</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Skill</TableHead>
+                        <TableHead>Proficiency</TableHead>
+                        <TableHead>Evidence</TableHead>
+                        <TableHead>Impact</TableHead>
+                        <TableHead className="text-center w-32">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {flattenedRows.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>{row.name}</TableCell>
+                          <TableCell>{row.designation || "-"}</TableCell>
+                          <TableCell>
+                            <Input
+                              placeholder="Enter email"
+                              value={row.email || ""}
+                              onChange={(e) => handleEmailChange(index, e.target.value)}
+                              className="min-w-[200px]"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {row.skill ? (
+                              <span className="font-medium">{row.skill}</span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {row.proficiency ? (
+                              <Badge className={getProficiencyColor(row.proficiency)}>
+                                {row.proficiency}
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="max-w-xs">
+                            <span className="text-sm text-muted-foreground line-clamp-2">
+                              {row.evidence || "-"}
+                            </span>
+                          </TableCell>
+                          <TableCell className="max-w-xs">
+                            <span className="text-sm text-muted-foreground line-clamp-2">
+                              {row.impact || "-"}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              size="sm"
+                              onClick={() => sendWebhook(index)}
+                              variant="outline"
+                            >
+                              Send Row
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             )}
