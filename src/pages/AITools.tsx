@@ -286,15 +286,18 @@ Tom Brown, Marketing Manager`;
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="webhookUrl">🔗 Webhook URL (Your Case System)</Label>
-                <Input
-                  id="webhookUrl"
-                  placeholder="https://your-case-system.com/webhook"
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Your Case System)</Label>
+                  <Input
+                    id="webhookUrl"
+                    placeholder="https://your-case-system.com/webhook"
+                    value={webhookUrl}
+                    onChange={(e) => setWebhookUrl(e.target.value)}
+                  />
+                  <p className="text-sm text-destructive font-medium">
+                    ⚠️ Email is required for all rows before sending to case system
+                  </p>
+                </div>
 
               <Button
                 onClick={handleExtract}
@@ -322,8 +325,12 @@ Tom Brown, Marketing Manager`;
                   <Button
                     onClick={() => sendWebhook()}
                     variant="secondary"
+                    disabled={flattenedRows.some(row => !row.email?.trim())}
                   >
                     Send All to Webhook
+                    {flattenedRows.some(row => !row.email?.trim()) && (
+                      <span className="ml-2 text-xs">(Missing emails)</span>
+                    )}
                   </Button>
                 </div>
                 <div className="border rounded-lg overflow-hidden">
@@ -333,7 +340,7 @@ Tom Brown, Marketing Manager`;
                         <TableHead className="w-12">No.</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
-                        <TableHead>Email</TableHead>
+                        <TableHead>Email *</TableHead>
                         <TableHead>Skill</TableHead>
                         <TableHead>Proficiency</TableHead>
                         <TableHead>Evidence</TableHead>
@@ -362,12 +369,17 @@ Tom Brown, Marketing Manager`;
                             />
                           </TableCell>
                           <TableCell>
-                            <Input
-                              placeholder="Enter email"
-                              value={row.email || ""}
-                              onChange={(e) => handleFieldChange(index, 'email', e.target.value)}
-                              className="min-w-[200px]"
-                            />
+                            <div className="space-y-1">
+                              <Input
+                                placeholder="Enter email (required)"
+                                value={row.email || ""}
+                                onChange={(e) => handleFieldChange(index, 'email', e.target.value)}
+                                className={`min-w-[200px] ${!row.email?.trim() ? 'border-destructive' : ''}`}
+                              />
+                              {!row.email?.trim() && (
+                                <p className="text-xs text-destructive">Required for sending</p>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Input
@@ -408,8 +420,9 @@ Tom Brown, Marketing Manager`;
                               size="sm"
                               onClick={() => sendWebhook(index)}
                               variant="outline"
+                              disabled={!row.email?.trim()}
                             >
-                              Send Row
+                              {!row.email?.trim() ? 'Email Required' : 'Send Row'}
                             </Button>
                           </TableCell>
                         </TableRow>
