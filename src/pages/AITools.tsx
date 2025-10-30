@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Sparkles } from "lucide-react";
+import { z } from "zod";
 import {
   Table,
   TableBody,
@@ -40,6 +41,8 @@ interface FlattenedRow {
   impact: string;
 }
 
+const emailSchema = z.string().trim().email({ message: "Invalid email format" }).max(255, { message: "Email must be less than 255 characters" });
+
 const AITools = () => {
   const [eventName, setEventName] = useState("");
   const [meetingNotes, setMeetingNotes] = useState("");
@@ -47,6 +50,7 @@ const AITools = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
+  const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
 
   const handleExtract = async () => {
@@ -160,6 +164,24 @@ const AITools = () => {
     const updated = [...flattenedRows];
     updated[rowIndex] = { ...updated[rowIndex], [field]: value };
     setFlattenedRows(updated);
+    
+    // Validate email format if the field being changed is email
+    if (field === 'email') {
+      const newEmailErrors = { ...emailErrors };
+      
+      if (value.trim()) {
+        const result = emailSchema.safeParse(value);
+        if (!result.success) {
+          newEmailErrors[rowIndex] = result.error.errors[0].message;
+        } else {
+          delete newEmailErrors[rowIndex];
+        }
+      } else {
+        delete newEmailErrors[rowIndex];
+      }
+      
+      setEmailErrors(newEmailErrors);
+    }
   };
 
   const sendWebhook = async (rowIndex?: number) => {
@@ -175,13 +197,31 @@ const AITools = () => {
     // Determine which rows to send
     const rowsToSend = rowIndex !== undefined ? [flattenedRows[rowIndex]] : flattenedRows;
     
-    // Validate emails
+    // Validate emails are present
     const missingEmails = rowsToSend.filter(row => !row.email?.trim());
     
     if (missingEmails.length > 0) {
       toast({
         title: "Email required",
         description: `Please enter email addresses for all attendees before sending to case system`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate email formats
+    const invalidEmails = rowsToSend.filter(row => {
+      if (row.email?.trim()) {
+        const result = emailSchema.safeParse(row.email);
+        return !result.success;
+      }
+      return false;
+    });
+    
+    if (invalidEmails.length > 0) {
+      toast({
+        title: "Invalid email format",
+        description: `Please correct the email format for all attendees before sending`,
         variant: "destructive",
       });
       return;
@@ -335,11 +375,13 @@ Tom Brown, Marketing Manager`;
                   <Button
                     onClick={() => sendWebhook()}
                     variant="secondary"
-                    disabled={flattenedRows.some(row => !row.email?.trim())}
+                    disabled={flattenedRows.some(row => !row.email?.trim()) || Object.keys(emailErrors).length > 0}
                   >
                     Send All to Webhook
-                    {flattenedRows.some(row => !row.email?.trim()) && (
-                      <span className="ml-2 text-xs">(Missing emails)</span>
+                    {(flattenedRows.some(row => !row.email?.trim()) || Object.keys(emailErrors).length > 0) && (
+                      <span className="ml-2 text-xs">
+                        ({Object.keys(emailErrors).length > 0 ? 'Invalid emails' : 'Missing emails'})
+                      </span>
                     )}
                   </Button>
                 </div>
@@ -384,10 +426,13 @@ Tom Brown, Marketing Manager`;
                                 placeholder="Enter email (required)"
                                 value={row.email || ""}
                                 onChange={(e) => handleFieldChange(index, 'email', e.target.value)}
-                                className={`min-w-[200px] ${!row.email?.trim() ? 'border-destructive' : ''}`}
+                                className={`min-w-[200px] ${!row.email?.trim() || emailErrors[index] ? 'border-destructive' : ''}`}
                               />
                               {!row.email?.trim() && (
                                 <p className="text-xs text-destructive">Required for sending</p>
+                              )}
+                              {row.email?.trim() && emailErrors[index] && (
+                                <p className="text-xs text-destructive">{emailErrors[index]}</p>
                               )}
                             </div>
                           </TableCell>
@@ -430,9 +475,9 @@ Tom Brown, Marketing Manager`;
                               size="sm"
                               onClick={() => sendWebhook(index)}
                               variant="outline"
-                              disabled={!row.email?.trim()}
+                              disabled={!row.email?.trim() || !!emailErrors[index]}
                             >
-                              {!row.email?.trim() ? 'Email Required' : 'Send Row'}
+                              {!row.email?.trim() ? 'Email Required' : emailErrors[index] ? 'Invalid Email' : 'Send Row'}
                             </Button>
                           </TableCell>
                         </TableRow>
