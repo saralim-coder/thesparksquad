@@ -114,6 +114,19 @@ const AITools = () => {
       return;
     }
 
+    // Validate emails
+    const dataArray = Array.isArray(data) ? data : [data];
+    const missingEmails = dataArray.filter(person => !person.email?.trim());
+    
+    if (missingEmails.length > 0) {
+      toast({
+        title: "Email required",
+        description: `Please enter email addresses for all attendees before sending to case system`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const response = await fetch(webhookUrl, {
         method: "POST",
