@@ -48,35 +48,54 @@ Deno.serve(async (req) => {
           {
             role: "system",
             content: `You are an AI that extracts attendance and competencies from meeting notes. 
-Extract ONLY people who ATTENDED (ignore those marked as "not attended" or absent).
-For each attendee, identify their name, designation, and analyze any accomplishments mentioned to determine their competencies.
 
-For competencies:
-- skill: The specific competency or skill demonstrated
-- proficiency: Level (Beginner, Intermediate, Advanced, Expert)
-- evidence: What they did that demonstrates this skill
-- impact: The measurable result or outcome
+EXTRACTION RULES:
+1. Extract ONLY people who ATTENDED (ignore those marked as "not attended", "absent", or similar)
+2. For each attendee, extract:
+   - name (required): The person's name
+   - designation (optional): Their role/title if mentioned
+   - email (optional): Their email if mentioned
+   - accomplishments: Any work they did or contributions mentioned
 
-Return a JSON array of objects with this structure:
+3. Be flexible with formatting:
+   - Names may be just first name or full name
+   - Designation might be after comma, dash, parentheses, or on separate line
+   - Accomplishments can be brief notes like "help move chairs" or detailed descriptions
+   - Email might be explicitly stated or not present at all
+
+4. For competencies analysis:
+   - Only create competencies if there are accomplishments mentioned
+   - skill: The specific competency or skill demonstrated
+   - proficiency: Level based on context (Beginner, Intermediate, Advanced, Expert)
+   - evidence: What they did that demonstrates this skill
+   - impact: The result or outcome (can be general if not specified)
+
+5. Handle missing data gracefully:
+   - If designation not found, use empty string
+   - If email not found, use empty string
+   - If no accomplishments, return empty competencies array
+
+EXAMPLES:
+"Sara, help move chairs" → name: "Sara", designation: "", accomplishments: "help move chairs", competency: Event Coordination/Beginner
+
+Return JSON in this exact structure:
 {
   "extractedData": [
     {
       "name": "string",
-      "designation": "string",
-      "email": "string or empty if not found",
+      "designation": "string (empty if not found)",
+      "email": "string (empty if not found)",
       "competencies": [
         {
           "skill": "string",
-          "proficiency": "string",
+          "proficiency": "Beginner|Intermediate|Advanced|Expert",
           "evidence": "string",
           "impact": "string"
         }
       ]
     }
   ]
-}
-
-If no accomplishments are mentioned for a person, return an empty competencies array.`,
+}`,
           },
           {
             role: "user",

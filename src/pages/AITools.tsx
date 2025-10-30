@@ -166,10 +166,11 @@ const AITools = () => {
   };
 
   const exampleNotes = `Attended:
+Sara, help move chairs
 John, IT - Led database migration project, improved query performance by 60%
 Sarah Johnson, Senior Developer - Architected new microservices, mentored 3 junior devs
-Mike Chen - QA Lead - Implemented automated testing framework, reduced bugs by 40%
-Emily Davis (Client Success) - Coordinated 15 client onboardings, 98% satisfaction rate
+Mike Chen - QA Lead - Implemented automated testing framework
+Emily Davis (Client Success) emily@email.com - Coordinated 15 client onboardings
 
 Not attended:
 Sharon, Finance
@@ -218,7 +219,7 @@ Tom Brown, Marketing Manager`;
                   className="font-mono text-sm"
                 />
                 <p className="text-sm text-muted-foreground">
-                  AI will extract attendance, designations, and analyze competencies from accomplishments
+                  AI will extract names, designations (if available), emails (if available), and competencies from accomplishments. Format is flexible - simple notes like "Sara, help move chairs" work too.
                 </p>
               </div>
 
