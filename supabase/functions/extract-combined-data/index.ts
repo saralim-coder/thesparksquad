@@ -1,6 +1,4 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-
-const LOVABLE_AI_GATEWAY_URL = "https://api.lovable.app/v1";
+const LOVABLE_AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,14 +31,19 @@ Deno.serve(async (req) => {
       throw new Error("Missing required fields");
     }
 
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY not configured");
+    }
+
     const response = await fetch(`${LOVABLE_AI_GATEWAY_URL}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
@@ -114,7 +117,7 @@ If no accomplishments are mentioned for a person, return an empty competencies a
   } catch (error) {
     console.error("Error in extract-combined-data function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "An unknown error occurred" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
