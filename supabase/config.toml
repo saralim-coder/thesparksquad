@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.analyze-competencies]
 verify_jwt = false
+
+[functions.extract-combined-data]
+verify_jwt = false
