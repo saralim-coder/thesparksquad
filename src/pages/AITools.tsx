@@ -193,33 +193,24 @@ const AITools = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        mode: "no-cors", // Handle CORS for external webhooks like Plumber
         body: JSON.stringify({ 
           eventName, 
-          data: rowsToSend 
+          data: rowsToSend,
+          timestamp: new Date().toISOString(),
+          triggered_from: window.location.origin,
         }),
       });
 
-      const responseText = await response.text();
-      let responseData;
-      
-      try {
-        responseData = JSON.parse(responseText);
-      } catch {
-        responseData = { message: responseText };
-      }
-
-      if (!response.ok) {
-        console.error("Webhook error:", response.status, responseData);
-        throw new Error(`Webhook returned status ${response.status}: ${responseText}`);
-      }
-
-      console.log("Webhook success:", responseData);
+      // Since we're using no-cors, we won't get a proper response status
+      // Show a more informative message
+      console.log("Webhook request sent to:", webhookUrl);
       
       toast({
-        title: "Webhook sent successfully!",
+        title: "Data sent to webhook",
         description: rowIndex !== undefined 
-          ? `Row ${rowIndex + 1} sent to your case system` 
-          : `All ${rowsToSend.length} rows sent to your case system`,
+          ? `Row ${rowIndex + 1} sent to your case system. Please check Plumber history to confirm.` 
+          : `All ${rowsToSend.length} rows sent to your case system. Please check Plumber history to confirm.`,
       });
     } catch (error) {
       console.error("Webhook error:", error);
@@ -303,10 +294,10 @@ Tom Brown, Marketing Manager`;
               </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Your Case System / Plumber API)</Label>
+                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Plumber / External Case System)</Label>
                   <Input
                     id="webhookUrl"
-                    placeholder="https://your-plumber-api.com/endpoint"
+                    placeholder="https://plumber.gov.sg/webhooks/your-webhook-id"
                     value={webhookUrl}
                     onChange={(e) => setWebhookUrl(e.target.value)}
                   />
