@@ -278,7 +278,6 @@ const AITools = () => {
   const exampleNotes = `Attended:
 Sara Chen, Volunteer Coordinator - Helped set up food distribution area
 John Tan, Event Lead - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
-Sarah Lim, Youth Mentor sarah.lim@email.com - Mentored 8 students in coding workshop, developed new curriculum
 Mike Wong - Community Outreach - Led senior citizens tech literacy session with 15 participants
 Emily Koh (Fundraising) emily.koh@email.com - Coordinated donation drive raising $5,000 for local shelter
 
