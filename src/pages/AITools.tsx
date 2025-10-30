@@ -276,15 +276,15 @@ const AITools = () => {
   };
 
   const exampleNotes = `Attended:
-Sara, help move chairs
-John, IT - Led database migration project, improved query performance by 60%
-Sarah Johnson, Senior Developer - Architected new microservices, mentored 3 junior devs
-Mike Chen - QA Lead - Implemented automated testing framework
-Emily Davis (Client Success) emily@email.com - Coordinated 15 client onboardings
+Sara Chen, Volunteer Coordinator - Helped set up food distribution area
+John Tan, Event Lead - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
+Sarah Lim, Youth Mentor sarah.lim@email.com - Mentored 8 students in coding workshop, developed new curriculum
+Mike Wong - Community Outreach - Led senior citizens tech literacy session with 15 participants
+Emily Koh (Fundraising) emily.koh@email.com - Coordinated donation drive raising $5,000 for local shelter
 
 Not attended:
-Sharon, Finance
-Tom Brown, Marketing Manager`;
+David Lee, Logistics
+Maria Santos, Communications Manager`;
 
   return (
     <div className="min-h-screen bg-background">
