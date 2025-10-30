@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Calendar, Award, TrendingUp, Heart, Target } from "lucide-react";
+import { Users, Calendar, Award, TrendingUp, Heart, Target, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -25,9 +26,12 @@ const Index = () => {
               Manage grassroots participation with clarity and care.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-              <Button size="lg" className="text-lg shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-soft)] transition-all">
-                Get Started
-              </Button>
+              <Link to="/ai-tools">
+                <Button size="lg" className="text-lg shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-soft)] transition-all">
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Try AI Tools
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" className="text-lg border-2">
                 Learn More
               </Button>

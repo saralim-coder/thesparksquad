@@ -1,0 +1,7 @@
+project_id = "wpokxylpyleghcfdxgjd"
+
+[functions.extract-attendance]
+verify_jwt = false
+
+[functions.analyze-competencies]
+verify_jwt = false
