@@ -272,7 +272,7 @@ Tom Brown, Marketing Manager`;
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="meetingNotes">📝 Paste Meeting Notes (Attendance & Accomplishments)</Label>
+                <Label htmlFor="meetingNotes">📝 Paste Event/Meeting Notes</Label>
                 <Textarea
                   id="meetingNotes"
                   placeholder={exampleNotes}
@@ -282,7 +282,7 @@ Tom Brown, Marketing Manager`;
                   className="font-mono text-sm"
                 />
                 <p className="text-sm text-muted-foreground">
-                  AI will extract names, designations (if available), emails (if available), and competencies from accomplishments. Format is flexible - simple notes like "Sara, help move chairs" work too.
+                  AI will extract names, designations, emails and competencies from accomplishments. If the data is not available, it will be blank.
                 </p>
               </div>
 
