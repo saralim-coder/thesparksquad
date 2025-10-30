@@ -261,7 +261,7 @@ Tom Brown, Marketing Manager`;
             One Volunteer at a Time
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Extract attendance and competencies from meeting notes, then send directly to your case system
+            Extract attendance and competencies from meeting notes, then send directly to GatherSG
           </p>
         </div>
 
@@ -294,7 +294,7 @@ Tom Brown, Marketing Manager`;
               </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Plumber / External Case System)</Label>
+                  <Label htmlFor="webhookUrl">🔗 Plumber Webhook URL (To GatherSG)</Label>
                   <Input
                     id="webhookUrl"
                     placeholder="https://plumber.gov.sg/webhooks/your-webhook-id"
