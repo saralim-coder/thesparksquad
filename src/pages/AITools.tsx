@@ -389,6 +389,7 @@ Maria Santos, Communications Manager`;
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-12">No.</TableHead>
+                        <TableHead>Event Name</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
                         <TableHead>Email *</TableHead>
@@ -403,6 +404,11 @@ Maria Santos, Communications Manager`;
                       {flattenedRows.map((row, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>
+                            <div className="min-w-[150px] px-2 py-1 bg-muted/50 rounded text-sm">
+                              {eventName}
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <Input
                               placeholder="Name"
