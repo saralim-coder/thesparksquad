@@ -156,6 +156,12 @@ const AITools = () => {
     setExtractedData(updatedOriginal);
   };
 
+  const handleFieldChange = (rowIndex: number, field: keyof FlattenedRow, value: string) => {
+    const updated = [...flattenedRows];
+    updated[rowIndex] = { ...updated[rowIndex], [field]: value };
+    setFlattenedRows(updated);
+  };
+
   const sendWebhook = async (rowIndex?: number) => {
     if (!webhookUrl.trim()) {
       toast({
@@ -339,41 +345,63 @@ Tom Brown, Marketing Manager`;
                       {flattenedRows.map((row, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{index + 1}</TableCell>
-                          <TableCell>{row.name}</TableCell>
-                          <TableCell>{row.designation || "-"}</TableCell>
+                          <TableCell>
+                            <Input
+                              placeholder="Name"
+                              value={row.name}
+                              onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
+                              className="min-w-[150px]"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              placeholder="Designation"
+                              value={row.designation || ""}
+                              onChange={(e) => handleFieldChange(index, 'designation', e.target.value)}
+                              className="min-w-[150px]"
+                            />
+                          </TableCell>
                           <TableCell>
                             <Input
                               placeholder="Enter email"
                               value={row.email || ""}
-                              onChange={(e) => handleEmailChange(index, e.target.value)}
+                              onChange={(e) => handleFieldChange(index, 'email', e.target.value)}
                               className="min-w-[200px]"
                             />
                           </TableCell>
                           <TableCell>
-                            {row.skill ? (
-                              <span className="font-medium">{row.skill}</span>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
+                            <Input
+                              placeholder="Skill"
+                              value={row.skill || ""}
+                              onChange={(e) => handleFieldChange(index, 'skill', e.target.value)}
+                              className="min-w-[150px]"
+                            />
                           </TableCell>
                           <TableCell>
-                            {row.proficiency ? (
-                              <Badge className={getProficiencyColor(row.proficiency)}>
-                                {row.proficiency}
-                              </Badge>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
+                            <Input
+                              placeholder="Proficiency"
+                              value={row.proficiency || ""}
+                              onChange={(e) => handleFieldChange(index, 'proficiency', e.target.value)}
+                              className="min-w-[120px]"
+                            />
                           </TableCell>
-                          <TableCell className="max-w-xs">
-                            <span className="text-sm text-muted-foreground line-clamp-2">
-                              {row.evidence || "-"}
-                            </span>
+                          <TableCell>
+                            <Textarea
+                              placeholder="Evidence"
+                              value={row.evidence || ""}
+                              onChange={(e) => handleFieldChange(index, 'evidence', e.target.value)}
+                              className="min-w-[200px] min-h-[60px]"
+                              rows={2}
+                            />
                           </TableCell>
-                          <TableCell className="max-w-xs">
-                            <span className="text-sm text-muted-foreground line-clamp-2">
-                              {row.impact || "-"}
-                            </span>
+                          <TableCell>
+                            <Textarea
+                              placeholder="Impact"
+                              value={row.impact || ""}
+                              onChange={(e) => handleFieldChange(index, 'impact', e.target.value)}
+                              className="min-w-[200px] min-h-[60px]"
+                              rows={2}
+                            />
                           </TableCell>
                           <TableCell className="text-center">
                             <Button
