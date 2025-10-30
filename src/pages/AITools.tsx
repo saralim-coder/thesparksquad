@@ -199,17 +199,33 @@ const AITools = () => {
         }),
       });
 
-      if (!response.ok) throw new Error("Webhook failed");
+      const responseText = await response.text();
+      let responseData;
+      
+      try {
+        responseData = JSON.parse(responseText);
+      } catch {
+        responseData = { message: responseText };
+      }
 
+      if (!response.ok) {
+        console.error("Webhook error:", response.status, responseData);
+        throw new Error(`Webhook returned status ${response.status}: ${responseText}`);
+      }
+
+      console.log("Webhook success:", responseData);
+      
       toast({
-        title: "Webhook sent!",
-        description: "Data has been sent to your case system",
+        title: "Webhook sent successfully!",
+        description: rowIndex !== undefined 
+          ? `Row ${rowIndex + 1} sent to your case system` 
+          : `All ${rowsToSend.length} rows sent to your case system`,
       });
     } catch (error) {
       console.error("Webhook error:", error);
       toast({
         title: "Webhook failed",
-        description: "Unable to send data to webhook",
+        description: error instanceof Error ? error.message : "Unable to send data to webhook. Please check the URL and try again.",
         variant: "destructive",
       });
     }
@@ -287,13 +303,16 @@ Tom Brown, Marketing Manager`;
               </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Your Case System)</Label>
+                  <Label htmlFor="webhookUrl">🔗 Webhook URL (Your Case System / Plumber API)</Label>
                   <Input
                     id="webhookUrl"
-                    placeholder="https://your-case-system.com/webhook"
+                    placeholder="https://your-plumber-api.com/endpoint"
                     value={webhookUrl}
                     onChange={(e) => setWebhookUrl(e.target.value)}
                   />
+                  <p className="text-sm text-muted-foreground">
+                    Data will be sent as JSON: {`{ "eventName": "...", "data": [...] }`}
+                  </p>
                   <p className="text-sm text-destructive font-medium">
                     ⚠️ Email is required for all rows before sending to case system
                   </p>
