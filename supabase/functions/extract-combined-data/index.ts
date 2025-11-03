@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
 
     const systemContent = `You are an AI that extracts attendance and competencies from meeting notes or images. 
 
-EXTRACTION RULES:
+CRITICAL RULES - READ CAREFULLY:
 1. Extract ONLY people who ATTENDED (ignore those marked as "not attended", "absent", or similar)
 2. For each attendee, extract:
    - name (required): The person's name
@@ -46,22 +46,28 @@ EXTRACTION RULES:
 3. Be flexible with formatting:
    - Names may be just first name or full name
    - Designation might be after comma, dash, parentheses, or on separate line
-   - Accomplishments can be brief notes like "help move chairs" or detailed descriptions
    - NRIC might be explicitly stated or not present at all
 
-4. For contributions analysis:
-   - Only create contributions if there are accomplishments mentioned
-   - contributions: A comprehensive description that includes what was accomplished, the skills demonstrated, evidence from the accomplishments, and the impact created
-   - Be specific and evidence-based
-   - Focus on concrete achievements and outcomes
+4. STRICT CONTRIBUTIONS EXTRACTION RULES:
+   - **ONLY** create contributions if there are EXPLICIT accomplishments or work mentioned in the meeting notes
+   - **DO NOT** infer, assume, or generate contributions based on job titles or roles
+   - **DO NOT** make up or imagine what someone might have done
+   - If someone's name is mentioned but NO specific accomplishments or work is described, return EMPTY competencies array
+   - The contributions field must be directly justified by text in the meeting notes
+   - contributions: A comprehensive description that includes what was accomplished, the skills demonstrated, evidence from the meeting notes, and the impact created
+   - Be specific and evidence-based - only include what is explicitly stated
 
 5. Handle missing data gracefully:
    - If designation not found, use empty string
    - If nric not found, use empty string
-   - If no accomplishments, return empty competencies array
+   - If no accomplishments mentioned, return empty competencies array (DO NOT make assumptions)
 
 EXAMPLES:
-"Sara, help move chairs" → name: "Sara", designation: "", accomplishments: "help move chairs", contributions: "Provided logistical support for event setup by helping move chairs, demonstrating event coordination skills and physical readiness to support team needs"
+✅ CORRECT: "Sara, help move chairs" → name: "Sara", designation: "", accomplishments: "help move chairs", contributions: "Provided logistical support for event setup by helping move chairs, demonstrating event coordination skills and physical readiness to support team needs"
+
+✅ CORRECT: "John Tan, Event Lead" → name: "John Tan", designation: "Event Lead", competencies: [] (empty because no accomplishments mentioned)
+
+❌ WRONG: "John Tan, Event Lead" → DO NOT create contributions like "Led the event" or "Managed team" without explicit evidence in notes
 
 Return JSON in this exact structure:
 {
@@ -72,7 +78,7 @@ Return JSON in this exact structure:
       "nric": "string (empty if not found)",
       "competencies": [
         {
-          "contributions": "string (comprehensive description of accomplishments, skills, evidence, and impact)"
+          "contributions": "string (ONLY if explicitly justified by meeting notes)"
         }
       ]
     }
