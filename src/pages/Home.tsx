@@ -132,10 +132,10 @@ const Home = () => {
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   3
                 </div>
-                <h3 className="text-xl font-bold">Seamless Integration with Gather</h3>
+                <h3 className="text-xl font-bold">Seamless Integration with Gather through Plumber Webhooks</h3>
               </div>
               <p className="text-muted-foreground">
-                Once organised, volunteer information is automatically sent to your Gather case management system for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
+                Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
               </p>
             </Card>
 
