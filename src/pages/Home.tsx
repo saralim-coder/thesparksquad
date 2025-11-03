@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp } from "lucide-react";
+import step1Screenshot from "@/assets/step1-screenshot.png";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -87,6 +88,11 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold">Input Made Simple</h3>
               </div>
+              <img 
+                src={step1Screenshot} 
+                alt="Step 1: Input interface showing event name, meeting notes, and upload options" 
+                className="w-full rounded-lg mb-4 shadow-md"
+              />
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
