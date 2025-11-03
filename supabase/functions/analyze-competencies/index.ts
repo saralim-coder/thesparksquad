@@ -19,17 +19,17 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are a competency analysis expert. Analyze the provided accomplishments and extract key competencies.
+    const systemPrompt = `You are a competency analysis expert. Analyze the provided accomplishments and extract key contributions.
     
 Rules:
-1. Identify 5-10 key competencies demonstrated in the accomplishments
-2. For each competency, provide:
-   - Skill name (e.g., "Leadership", "Technical Development", "Project Management")
-   - Proficiency level: Beginner, Intermediate, Advanced, or Expert
-   - Evidence: A brief quote or reference from the accomplishments that demonstrates this skill
-   - Impact: How this competency contributed to success
+1. Identify 5-10 key contributions demonstrated in the accomplishments
+2. For each contribution, provide a comprehensive description that includes:
+   - What was accomplished
+   - The skills and expertise demonstrated
+   - Evidence from the accomplishments
+   - The impact and value created
 3. Be specific and evidence-based
-4. Focus on transferable skills and concrete achievements`;
+4. Focus on concrete achievements and outcomes`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -48,7 +48,7 @@ Rules:
             type: "function",
             function: {
               name: "analyze_competencies",
-              description: "Extract and analyze competencies from accomplishment descriptions",
+              description: "Extract and analyze contributions from accomplishment descriptions",
               parameters: {
                 type: "object",
                 properties: {
@@ -57,15 +57,9 @@ Rules:
                     items: {
                       type: "object",
                       properties: {
-                        skill: { type: "string" },
-                        proficiency: { 
-                          type: "string",
-                          enum: ["Beginner", "Intermediate", "Advanced", "Expert"]
-                        },
-                        evidence: { type: "string" },
-                        impact: { type: "string" },
+                        contributions: { type: "string" },
                       },
-                      required: ["skill", "proficiency", "evidence", "impact"],
+                      required: ["contributions"],
                       additionalProperties: false,
                     },
                   },

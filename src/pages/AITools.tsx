@@ -28,10 +28,7 @@ interface ExtractedData {
   designation: string;
   nric?: string;
   competencies: Array<{
-    skill: string;
-    proficiency: string;
-    evidence: string;
-    impact: string;
+    contributions: string;
   }>;
 }
 
@@ -40,10 +37,7 @@ interface FlattenedRow {
   name: string;
   designation: string;
   nric?: string;
-  skill: string;
-  proficiency: string;
-  evidence: string;
-  impact: string;
+  contributions: string;
 }
 
 const nricSchema = z.string().trim().regex(/^[STFGM]\d{7}[A-Z]$/i, { message: "Invalid NRIC format (e.g., S1234567A)" }).max(9, { message: "NRIC must be 9 characters" });
@@ -124,10 +118,7 @@ const AITools = () => {
                   name: person.name,
                   designation: person.designation,
                   nric: person.nric,
-                  skill: "",
-                  proficiency: "",
-                  evidence: "",
-                  impact: "",
+                  contributions: "",
                 });
               } else {
                 person.competencies.forEach((comp) => {
@@ -136,10 +127,7 @@ const AITools = () => {
                     name: person.name,
                     designation: person.designation,
                     nric: person.nric,
-                    skill: comp.skill,
-                    proficiency: comp.proficiency,
-                    evidence: comp.evidence,
-                    impact: comp.impact,
+                    contributions: comp.contributions,
                   });
                 });
               }
@@ -226,10 +214,7 @@ const AITools = () => {
             name: person.name,
             designation: person.designation,
             nric: person.nric,
-            skill: "",
-            proficiency: "",
-            evidence: "",
-            impact: "",
+            contributions: "",
           });
         } else {
           // Each competency gets its own row
@@ -239,10 +224,7 @@ const AITools = () => {
               name: person.name,
               designation: person.designation,
               nric: person.nric,
-              skill: comp.skill,
-              proficiency: comp.proficiency,
-              evidence: comp.evidence,
-              impact: comp.impact,
+              contributions: comp.contributions,
             });
           });
         }
@@ -584,10 +566,7 @@ Maria Santos, Communications Manager`;
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
                         <TableHead>NRIC *</TableHead>
-                        <TableHead>Skill</TableHead>
-                        <TableHead>Proficiency</TableHead>
-                        <TableHead>Evidence</TableHead>
-                        <TableHead>Impact</TableHead>
+                        <TableHead>Contributions</TableHead>
                         <TableHead className="text-center w-32">Action</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -633,37 +612,12 @@ Maria Santos, Communications Manager`;
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Input
-                              placeholder="Skill"
-                              value={row.skill || ""}
-                              onChange={(e) => handleFieldChange(index, 'skill', e.target.value)}
-                              className="min-w-[150px]"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              placeholder="Proficiency"
-                              value={row.proficiency || ""}
-                              onChange={(e) => handleFieldChange(index, 'proficiency', e.target.value)}
-                              className="min-w-[120px]"
-                            />
-                          </TableCell>
-                          <TableCell>
                             <Textarea
-                              placeholder="Evidence"
-                              value={row.evidence || ""}
-                              onChange={(e) => handleFieldChange(index, 'evidence', e.target.value)}
-                              className="min-w-[200px] min-h-[60px]"
-                              rows={2}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Textarea
-                              placeholder="Impact"
-                              value={row.impact || ""}
-                              onChange={(e) => handleFieldChange(index, 'impact', e.target.value)}
-                              className="min-w-[200px] min-h-[60px]"
-                              rows={2}
+                              placeholder="Contributions"
+                              value={row.contributions || ""}
+                              onChange={(e) => handleFieldChange(index, 'contributions', e.target.value)}
+                              className="min-w-[300px] min-h-[80px]"
+                              rows={3}
                             />
                           </TableCell>
                           <TableCell className="text-center">
