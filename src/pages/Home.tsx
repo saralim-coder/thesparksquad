@@ -145,18 +145,11 @@ const Home = () => {
               <p className="text-muted-foreground mb-4">
                 Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
               </p>
-              <div className="space-y-3">
-                <img 
-                  src={step3Plumber} 
-                  alt="Plumber webhook configuration showing successful data transmission" 
-                  className="w-full rounded-lg shadow-md"
-                />
-                <img 
-                  src={step3Gather} 
-                  alt="Gather case management system displaying volunteer information" 
-                  className="w-full rounded-lg shadow-md"
-                />
-              </div>
+              <img 
+                src={step3Plumber} 
+                alt="Plumber webhook configuration showing successful data transmission" 
+                className="w-full rounded-lg shadow-md"
+              />
             </Card>
 
             <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
@@ -166,9 +159,14 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold">Instant Profile Access</h3>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-4">
                 Staff can easily search and filter the complete history of any volunteer by simply entering their email address. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
               </p>
+              <img 
+                src={step3Gather} 
+                alt="Gather case management system displaying complete volunteer profile and history" 
+                className="w-full rounded-lg shadow-md"
+              />
             </Card>
           </div>
         </div>
