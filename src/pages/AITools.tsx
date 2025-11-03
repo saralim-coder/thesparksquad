@@ -563,6 +563,7 @@ Maria Santos, Communications Manager`;
                       <TableRow>
                         <TableHead className="w-12">No.</TableHead>
                         <TableHead>Event Name</TableHead>
+                        <TableHead>Event Date</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
                         <TableHead>NRIC *</TableHead>
@@ -577,6 +578,11 @@ Maria Santos, Communications Manager`;
                           <TableCell>
                             <div className="min-w-[150px] px-2 py-1 bg-muted/50 rounded text-sm">
                               {eventName}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="min-w-[120px] px-2 py-1 bg-muted/50 rounded text-sm">
+                              {eventDate ? format(eventDate, "PPP") : "-"}
                             </div>
                           </TableCell>
                           <TableCell>
