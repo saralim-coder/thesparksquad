@@ -160,7 +160,7 @@ const Home = () => {
                 <h3 className="text-xl font-bold">Instant Profile Access</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Staff can easily search and filter the complete history of any volunteer by simply entering their email address. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
+                Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
               </p>
               <img 
                 src={step3Gather} 

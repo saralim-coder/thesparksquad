@@ -22,7 +22,7 @@ import {
 interface ExtractedData {
   name: string;
   designation: string;
-  email?: string;
+  nric?: string;
   competencies: Array<{
     skill: string;
     proficiency: string;
@@ -35,14 +35,14 @@ interface FlattenedRow {
   originalIndex: number;
   name: string;
   designation: string;
-  email?: string;
+  nric?: string;
   skill: string;
   proficiency: string;
   evidence: string;
   impact: string;
 }
 
-const emailSchema = z.string().trim().email({ message: "Invalid email format" }).max(255, { message: "Email must be less than 255 characters" });
+const nricSchema = z.string().trim().regex(/^[STFGM]\d{7}[A-Z]$/i, { message: "Invalid NRIC format (e.g., S1234567A)" }).max(9, { message: "NRIC must be 9 characters" });
 
 const AITools = () => {
   const [eventName, setEventName] = useState("");
@@ -52,7 +52,7 @@ const AITools = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
-  const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
+  const [nricErrors, setNricErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -118,7 +118,7 @@ const AITools = () => {
                   originalIndex: index,
                   name: person.name,
                   designation: person.designation,
-                  email: person.email,
+                  nric: person.nric,
                   skill: "",
                   proficiency: "",
                   evidence: "",
@@ -130,7 +130,7 @@ const AITools = () => {
                     originalIndex: index,
                     name: person.name,
                     designation: person.designation,
-                    email: person.email,
+                    nric: person.nric,
                     skill: comp.skill,
                     proficiency: comp.proficiency,
                     evidence: comp.evidence,
@@ -220,7 +220,7 @@ const AITools = () => {
             originalIndex: index,
             name: person.name,
             designation: person.designation,
-            email: person.email,
+            nric: person.nric,
             skill: "",
             proficiency: "",
             evidence: "",
@@ -233,7 +233,7 @@ const AITools = () => {
               originalIndex: index,
               name: person.name,
               designation: person.designation,
-              email: person.email,
+              nric: person.nric,
               skill: comp.skill,
               proficiency: comp.proficiency,
               evidence: comp.evidence,
@@ -261,14 +261,14 @@ const AITools = () => {
     }
   };
 
-  const handleEmailChange = (rowIndex: number, email: string) => {
+  const handleNRICChange = (rowIndex: number, nric: string) => {
     const updated = [...flattenedRows];
-    updated[rowIndex].email = email;
+    updated[rowIndex].nric = nric;
     setFlattenedRows(updated);
     
     // Update original data
     const updatedOriginal = [...extractedData];
-    updatedOriginal[updated[rowIndex].originalIndex].email = email;
+    updatedOriginal[updated[rowIndex].originalIndex].nric = nric;
     setExtractedData(updatedOriginal);
   };
 
@@ -277,22 +277,22 @@ const AITools = () => {
     updated[rowIndex] = { ...updated[rowIndex], [field]: value };
     setFlattenedRows(updated);
     
-    // Validate email format if the field being changed is email
-    if (field === 'email') {
-      const newEmailErrors = { ...emailErrors };
+    // Validate NRIC format if the field being changed is nric
+    if (field === 'nric') {
+      const newNricErrors = { ...nricErrors };
       
       if (value.trim()) {
-        const result = emailSchema.safeParse(value);
+        const result = nricSchema.safeParse(value);
         if (!result.success) {
-          newEmailErrors[rowIndex] = result.error.errors[0].message;
+          newNricErrors[rowIndex] = result.error.errors[0].message;
         } else {
-          delete newEmailErrors[rowIndex];
+          delete newNricErrors[rowIndex];
         }
       } else {
-        delete newEmailErrors[rowIndex];
+        delete newNricErrors[rowIndex];
       }
       
-      setEmailErrors(newEmailErrors);
+      setNricErrors(newNricErrors);
     }
   };
 
@@ -309,31 +309,31 @@ const AITools = () => {
     // Determine which rows to send
     const rowsToSend = rowIndex !== undefined ? [flattenedRows[rowIndex]] : flattenedRows;
     
-    // Validate emails are present
-    const missingEmails = rowsToSend.filter(row => !row.email?.trim());
+    // Validate NRICs are present
+    const missingNRICs = rowsToSend.filter(row => !row.nric?.trim());
     
-    if (missingEmails.length > 0) {
+    if (missingNRICs.length > 0) {
       toast({
-        title: "Email required",
-        description: `Please enter email addresses for all attendees before sending to case system`,
+        title: "NRIC required",
+        description: `Please enter NRIC for all attendees before sending to case system`,
         variant: "destructive",
       });
       return;
     }
     
-    // Validate email formats
-    const invalidEmails = rowsToSend.filter(row => {
-      if (row.email?.trim()) {
-        const result = emailSchema.safeParse(row.email);
+    // Validate NRIC formats
+    const invalidNRICs = rowsToSend.filter(row => {
+      if (row.nric?.trim()) {
+        const result = nricSchema.safeParse(row.nric);
         return !result.success;
       }
       return false;
     });
     
-    if (invalidEmails.length > 0) {
+    if (invalidNRICs.length > 0) {
       toast({
-        title: "Invalid email format",
-        description: `Please correct the email format for all attendees before sending`,
+        title: "Invalid NRIC format",
+        description: `Please correct the NRIC format for all attendees before sending`,
         variant: "destructive",
       });
       return;
@@ -392,10 +392,10 @@ const AITools = () => {
   };
 
   const exampleNotes = `Attended:
-Sara Chen, Volunteer Coordinator - Helped set up food distribution area
-John Tan, Event Lead - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
+Sara Chen, Volunteer Coordinator, S1234567A - Helped set up food distribution area
+John Tan, Event Lead, T9876543B - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
 Mike Wong - Community Outreach - Led senior citizens tech literacy session with 15 participants
-Emily Koh (Fundraising) emily.koh@email.com - Coordinated donation drive raising $5,000 for local shelter
+Emily Koh (Fundraising) S7654321C - Coordinated donation drive raising $5,000 for local shelter
 
 Not attended:
 David Lee, Logistics
@@ -453,7 +453,7 @@ Maria Santos, Communications Manager`;
                   className="font-mono text-sm"
                 />
                 <p className="text-sm text-muted-foreground">
-                  AI will extract names, designations, emails and competencies from accomplishments. If the data is not available, it will be blank.
+                  AI will extract names, designations, NRICs and competencies from accomplishments. If the data is not available, it will be blank.
                 </p>
               </div>
 
@@ -482,7 +482,7 @@ Maria Santos, Communications Manager`;
                     Data will be sent as JSON: {`{ "eventName": "...", "data": [...] }`}
                   </p>
                   <p className="text-sm text-destructive font-medium">
-                    ⚠️ Email is required for all rows before sending to case system
+                    ⚠️ NRIC is required for all rows before sending to case system
                   </p>
                 </div>
 
@@ -532,12 +532,12 @@ Maria Santos, Communications Manager`;
                   <Button
                     onClick={() => sendWebhook()}
                     variant="secondary"
-                    disabled={flattenedRows.some(row => !row.email?.trim()) || Object.keys(emailErrors).length > 0}
+                    disabled={flattenedRows.some(row => !row.nric?.trim()) || Object.keys(nricErrors).length > 0}
                   >
                     Send All to Webhook
-                    {(flattenedRows.some(row => !row.email?.trim()) || Object.keys(emailErrors).length > 0) && (
+                    {(flattenedRows.some(row => !row.nric?.trim()) || Object.keys(nricErrors).length > 0) && (
                       <span className="ml-2 text-xs">
-                        ({Object.keys(emailErrors).length > 0 ? 'Invalid emails' : 'Missing emails'})
+                        ({Object.keys(nricErrors).length > 0 ? 'Invalid NRICs' : 'Missing NRICs'})
                       </span>
                     )}
                   </Button>
@@ -550,7 +550,7 @@ Maria Santos, Communications Manager`;
                         <TableHead>Event Name</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
-                        <TableHead>Email *</TableHead>
+                        <TableHead>NRIC *</TableHead>
                         <TableHead>Skill</TableHead>
                         <TableHead>Proficiency</TableHead>
                         <TableHead>Evidence</TableHead>
@@ -586,16 +586,16 @@ Maria Santos, Communications Manager`;
                           <TableCell>
                             <div className="space-y-1">
                               <Input
-                                placeholder="Enter email (required)"
-                                value={row.email || ""}
-                                onChange={(e) => handleFieldChange(index, 'email', e.target.value)}
-                                className={`min-w-[200px] ${!row.email?.trim() || emailErrors[index] ? 'border-destructive' : ''}`}
+                                placeholder="Enter NRIC (required)"
+                                value={row.nric || ""}
+                                onChange={(e) => handleFieldChange(index, 'nric', e.target.value)}
+                                className={`min-w-[200px] ${!row.nric?.trim() || nricErrors[index] ? 'border-destructive' : ''}`}
                               />
-                              {!row.email?.trim() && (
+                              {!row.nric?.trim() && (
                                 <p className="text-xs text-destructive">Required for sending</p>
                               )}
-                              {row.email?.trim() && emailErrors[index] && (
-                                <p className="text-xs text-destructive">{emailErrors[index]}</p>
+                              {row.nric?.trim() && nricErrors[index] && (
+                                <p className="text-xs text-destructive">{nricErrors[index]}</p>
                               )}
                             </div>
                           </TableCell>
@@ -638,9 +638,9 @@ Maria Santos, Communications Manager`;
                               size="sm"
                               onClick={() => sendWebhook(index)}
                               variant="outline"
-                              disabled={!row.email?.trim() || !!emailErrors[index]}
+                              disabled={!row.nric?.trim() || !!nricErrors[index]}
                             >
-                              {!row.email?.trim() ? 'Email Required' : emailErrors[index] ? 'Invalid Email' : 'Send Row'}
+                              {!row.nric?.trim() ? 'NRIC Required' : nricErrors[index] ? 'Invalid NRIC' : 'Send Row'}
                             </Button>
                           </TableCell>
                         </TableRow>
