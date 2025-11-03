@@ -340,39 +340,40 @@ const AITools = () => {
     }
 
     try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const { data, error } = await supabase.functions.invoke('forward-plumber-webhook', {
+        body: {
+          webhookUrl,
+          payload: {
+            eventName,
+            data: rowsToSend,
+            timestamp: new Date().toISOString(),
+            triggered_from: window.location.origin,
+          },
         },
-        body: JSON.stringify({ 
-          eventName, 
-          data: rowsToSend,
-          timestamp: new Date().toISOString(),
-          triggered_from: window.location.origin,
-        }),
       });
 
-      console.log("Webhook response status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => "Unknown error");
-        console.error("Webhook error response:", errorText);
-        throw new Error(`Webhook returned status ${response.status}: ${errorText}`);
+      if (error) throw error;
+
+      if (!data?.ok) {
+        throw new Error(data?.message || `Upstream error (status ${data?.status})`);
       }
-      
+
       toast({
-        title: "Data sent successfully",
-        description: rowIndex !== undefined 
-          ? `Row ${rowIndex + 1} sent to GatherSG via Plumber webhook.` 
-          : `All ${rowsToSend.length} rows sent to GatherSG via Plumber webhook.`,
+        title: 'Data sent successfully',
+        description:
+          rowIndex !== undefined
+            ? `Row ${rowIndex + 1} sent to GatherSG via Plumber webhook.`
+            : `All ${rowsToSend.length} rows sent to GatherSG via Plumber webhook.`,
       });
     } catch (error) {
-      console.error("Webhook error:", error);
+      console.error('Webhook error:', error);
       toast({
-        title: "Webhook failed",
-        description: error instanceof Error ? error.message : "Unable to send data to webhook. Please verify your Plumber webhook URL.",
-        variant: "destructive",
+        title: 'Webhook failed',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Unable to send data to webhook. Please verify your Plumber webhook URL.',
+        variant: 'destructive',
       });
     }
   };

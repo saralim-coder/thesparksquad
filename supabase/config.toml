@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.extract-combined-data]
 verify_jwt = false
+
+[functions.forward-plumber-webhook]
+verify_jwt = false
