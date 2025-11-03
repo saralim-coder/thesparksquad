@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft } from "lucide-react";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -53,6 +54,7 @@ const AITools = () => {
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleImageExtract = async () => {
     if (!eventName.trim()) {
@@ -398,6 +400,15 @@ Maria Santos, Communications Manager`;
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+        
         <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
             <Sparkles className="w-4 h-4" />
