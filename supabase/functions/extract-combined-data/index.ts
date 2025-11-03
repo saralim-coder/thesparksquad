@@ -25,9 +25,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { meetingNotes, eventName } = await req.json();
+    const { meetingNotes, eventName, imageData } = await req.json();
 
-    if (!meetingNotes || !eventName) {
+    if (!eventName || (!meetingNotes && !imageData)) {
       throw new Error("Missing required fields");
     }
 
@@ -36,18 +36,7 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const response = await fetch(`${LOVABLE_AI_GATEWAY_URL}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `You are an AI that extracts attendance and competencies from meeting notes. 
+    const systemContent = `You are an AI that extracts attendance and competencies from meeting notes or images. 
 
 EXTRACTION RULES:
 1. Extract ONLY people who ATTENDED (ignore those marked as "not attended", "absent", or similar)
@@ -95,13 +84,36 @@ Return JSON in this exact structure:
       ]
     }
   ]
-}`,
-          },
-          {
-            role: "user",
-            content: `Event: ${eventName}\n\nMeeting Notes:\n${meetingNotes}`,
-          },
-        ],
+}`;
+
+    let messages;
+    if (imageData) {
+      messages = [
+        { role: "system", content: systemContent },
+        { 
+          role: "user", 
+          content: [
+            { type: "text", text: `Event: ${eventName}\n\nPlease extract attendance and competency information from this image:` },
+            { type: "image_url", image_url: { url: imageData } }
+          ]
+        }
+      ];
+    } else {
+      messages = [
+        { role: "system", content: systemContent },
+        { role: "user", content: `Event: ${eventName}\n\nMeeting Notes:\n${meetingNotes}` }
+      ];
+    }
+
+    const response = await fetch(`${LOVABLE_AI_GATEWAY_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages,
         response_format: { type: "json_object" },
       }),
     });

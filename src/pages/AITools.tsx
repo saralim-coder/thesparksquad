@@ -48,10 +48,120 @@ const AITools = () => {
   const [meetingNotes, setMeetingNotes] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
+
+  const handleImageExtract = async () => {
+    if (!eventName.trim()) {
+      toast({
+        title: "Event name required",
+        description: "Please enter an event or meeting name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedImage) {
+      toast({
+        title: "Image required",
+        description: "Please upload an image",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedImage);
+      
+      await new Promise((resolve, reject) => {
+        reader.onload = async () => {
+          try {
+            const base64Image = reader.result as string;
+            
+            const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+              body: { imageData: base64Image, eventName },
+            });
+
+            if (error) {
+              if (error.message.includes("429")) {
+                toast({
+                  title: "Rate limit exceeded",
+                  description: "Please try again in a few moments",
+                  variant: "destructive",
+                });
+              } else if (error.message.includes("402")) {
+                toast({
+                  title: "Credits required",
+                  description: "Please add credits to your workspace",
+                  variant: "destructive",
+                });
+              } else {
+                throw error;
+              }
+              return;
+            }
+
+            setExtractedData(data.extractedData);
+            
+            const flattened: FlattenedRow[] = [];
+            data.extractedData.forEach((person: ExtractedData, index: number) => {
+              if (person.competencies.length === 0) {
+                flattened.push({
+                  originalIndex: index,
+                  name: person.name,
+                  designation: person.designation,
+                  email: person.email,
+                  skill: "",
+                  proficiency: "",
+                  evidence: "",
+                  impact: "",
+                });
+              } else {
+                person.competencies.forEach((comp) => {
+                  flattened.push({
+                    originalIndex: index,
+                    name: person.name,
+                    designation: person.designation,
+                    email: person.email,
+                    skill: comp.skill,
+                    proficiency: comp.proficiency,
+                    evidence: comp.evidence,
+                    impact: comp.impact,
+                  });
+                });
+              }
+            });
+            
+            setFlattenedRows(flattened);
+            
+            toast({
+              title: "Extraction complete!",
+              description: `Found ${data.extractedData.length} attendees with ${flattened.length} total competencies`,
+            });
+            resolve(null);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+      });
+    } catch (error) {
+      console.error("Error extracting data from image:", error);
+      toast({
+        title: "Extraction failed",
+        description: "Unable to extract data from image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleExtract = async () => {
     if (!eventName.trim()) {
@@ -332,6 +442,19 @@ Maria Santos, Communications Manager`;
                 </p>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="imageUpload">📷 Or Upload Image</Label>
+                <Input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Upload a photo of meeting notes, attendance list, or any document with participant information
+                </p>
+              </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="webhookUrl">🔗 Plumber Webhook URL (To GatherSG)</Label>
                   <Input
@@ -348,23 +471,43 @@ Maria Santos, Communications Manager`;
                   </p>
                 </div>
 
-              <Button
-                onClick={handleExtract}
-                disabled={isLoading}
-                className="w-full"
-                size="lg"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Extracting Data...
-                  </>
-                ) : (
-                  <>
-                    🚀 Extract Attendance & Competencies
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleExtract}
+                  disabled={isLoading || !meetingNotes.trim()}
+                  className="flex-1"
+                  size="lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Extracting...
+                    </>
+                  ) : (
+                    <>
+                      🚀 Extract from Notes
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={handleImageExtract}
+                  disabled={isLoading || !selectedImage}
+                  className="flex-1"
+                  size="lg"
+                  variant="secondary"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Extracting...
+                    </>
+                  ) : (
+                    <>
+                      📷 Extract from Image
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
 
             {flattenedRows.length > 0 && (
