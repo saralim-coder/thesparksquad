@@ -7,9 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Sparkles, ArrowLeft } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, CalendarIcon } from "lucide-react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -46,6 +50,7 @@ const nricSchema = z.string().trim().regex(/^[STFGM]\d{7}[A-Z]$/i, { message: "I
 
 const AITools = () => {
   const [eventName, setEventName] = useState("");
+  const [eventDate, setEventDate] = useState<Date>();
   const [meetingNotes, setMeetingNotes] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -345,6 +350,7 @@ const AITools = () => {
           webhookUrl,
           payload: {
             eventName,
+            eventDate: eventDate ? format(eventDate, "yyyy-MM-dd") : undefined,
             data: rowsToSend,
             timestamp: new Date().toISOString(),
             triggered_from: window.location.origin,
@@ -440,6 +446,33 @@ Maria Santos, Communications Manager`;
                   value={eventName}
                   onChange={(e) => setEventName(e.target.value)}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>📅 Event or Meeting Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !eventDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {eventDate ? format(eventDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={eventDate}
+                      onSelect={setEventDate}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-2">
