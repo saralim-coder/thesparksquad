@@ -345,7 +345,6 @@ const AITools = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: "no-cors", // Handle CORS for external webhooks like Plumber
         body: JSON.stringify({ 
           eventName, 
           data: rowsToSend,
@@ -354,21 +353,25 @@ const AITools = () => {
         }),
       });
 
-      // Since we're using no-cors, we won't get a proper response status
-      // Show a more informative message
-      console.log("Webhook request sent to:", webhookUrl);
+      console.log("Webhook response status:", response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        console.error("Webhook error response:", errorText);
+        throw new Error(`Webhook returned status ${response.status}: ${errorText}`);
+      }
       
       toast({
-        title: "Data sent to webhook",
+        title: "Data sent successfully",
         description: rowIndex !== undefined 
-          ? `Row ${rowIndex + 1} sent to your case system. Please check Plumber history to confirm.` 
-          : `All ${rowsToSend.length} rows sent to your case system. Please check Plumber history to confirm.`,
+          ? `Row ${rowIndex + 1} sent to GatherSG via Plumber webhook.` 
+          : `All ${rowsToSend.length} rows sent to GatherSG via Plumber webhook.`,
       });
     } catch (error) {
       console.error("Webhook error:", error);
       toast({
         title: "Webhook failed",
-        description: error instanceof Error ? error.message : "Unable to send data to webhook. Please check the URL and try again.",
+        description: error instanceof Error ? error.message : "Unable to send data to webhook. Please verify your Plumber webhook URL.",
         variant: "destructive",
       });
     }
