@@ -123,127 +123,104 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
                         />
                       </div>
                     )}
-
-                    {/* Steps */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold">How it works:</h3>
-                      {scenario.steps.map((step, index) => (
-                        <div key={index} className="flex items-start gap-3 group">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span className="text-sm font-bold text-primary">{index + 1}</span>
-                          </div>
-                          <p className="text-muted-foreground pt-1">{step}</p>
-                        </div>
-                      ))}
-                    </div>
                   </Card>
+
+                  {/* How It Works Steps */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          1
+                        </div>
+                        <h3 className="text-xl font-bold">Input Made Simple</h3>
+                      </div>
+                      {scenario.id === "text" && (
+                        <div className="mb-4">
+                          <img 
+                            src={step1Screenshot} 
+                            alt="Input interface showing event name, meeting notes, and upload options" 
+                            className="w-full rounded-lg shadow-md"
+                          />
+                        </div>
+                      )}
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Type or paste meeting notes directly into our platform</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Upload images of handwritten notes or documents</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Our system intelligently extracts and organises key information</span>
+                        </li>
+                      </ul>
+                    </Card>
+
+                    <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          2
+                        </div>
+                        <h3 className="text-xl font-bold">Automatic Organisation</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <Database className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                          <span><strong>Event Name</strong> – Track which activities volunteers participated in</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                          <span><strong>Name & Designation</strong> – Maintain accurate volunteer records</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                          <span><strong>Skills & Evidence</strong> – Document contributions and measure success</span>
+                        </li>
+                      </ul>
+                    </Card>
+
+                    <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          3
+                        </div>
+                        <h3 className="text-xl font-bold">Seamless Integration</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up.
+                      </p>
+                      <img 
+                        src={step3Plumber} 
+                        alt="Plumber webhook configuration showing successful data transmission" 
+                        className="w-full rounded-lg shadow-md"
+                      />
+                    </Card>
+
+                    <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          4
+                        </div>
+                        <h3 className="text-xl font-bold">Instant Profile Access</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
+                      </p>
+                      <img 
+                        src={step3Gather} 
+                        alt="Gather case management system displaying complete volunteer profile and history" 
+                        className="w-full rounded-lg shadow-md"
+                      />
+                    </Card>
+                  </div>
                 </TabsContent>
               );
             })}
           </Tabs>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">How It Works</h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  1
-                </div>
-                <h3 className="text-xl font-bold">Input Made Simple</h3>
-              </div>
-              <div className="mb-4">
-                <img 
-                  src={step1Screenshot} 
-                  alt="Step 1: Input interface showing event name, meeting notes, and upload options" 
-                  className="w-full rounded-lg shadow-md"
-                />
-              </div>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Type or paste meeting notes directly into our platform</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Upload images of handwritten notes or documents</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Our system intelligently extracts and organises key information</span>
-                </li>
-              </ul>
-            </Card>
-
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  2
-                </div>
-                <h3 className="text-xl font-bold">Automatic Organisation</h3>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <Database className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>Event Name</strong> – Track which activities volunteers participated in</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>Name & Designation</strong> – Maintain accurate volunteer records</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>Skills & Evidence</strong> – Document contributions and measure success</span>
-                  </li>
-                </ul>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  3
-                </div>
-                <h3 className="text-xl font-bold">Seamless Integration with Gather through Plumber Webhooks</h3>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-4">
-                  Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
-                </p>
-                <img 
-                  src={step3Plumber} 
-                  alt="Plumber webhook configuration showing successful data transmission" 
-                  className="w-full rounded-lg shadow-md"
-                />
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  4
-                </div>
-                <h3 className="text-xl font-bold">Instant Profile Access</h3>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-4">
-                  Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
-                </p>
-                <img 
-                  src={step3Gather} 
-                  alt="Gather case management system displaying complete volunteer profile and history" 
-                  className="w-full rounded-lg shadow-md"
-                />
-              </div>
-            </Card>
-          </div>
         </div>
       </section>
 
