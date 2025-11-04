@@ -27,7 +27,7 @@ const Home = () => {
             Managing Grassroots Volunteers' Participation
           </p>
           <p className="text-lg md:text-xl mb-10 text-white/80 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            A flexible CRM portal that works with your existing tools—no more scrambling for Excel sheets. Automatically capture attendance from WhatsApp polls, photos, or notes, track contributions, and build stronger community connections.
+            Automatically capture volunteer attendance from WhatsApp polls, photos, or notes, track contributions, and build stronger community connections
           </p>
           <Button 
             size="lg" 
