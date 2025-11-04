@@ -55,13 +55,6 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
     }
   ];
 
-  const results = [
-    { label: "Names Extracted", value: "3" },
-    { label: "NRICs Captured", value: "2" },
-    { label: "Contributions Recorded", value: "3" },
-    { label: "Processing Time", value: "2.3s" }
-  ];
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -138,22 +131,6 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
                             <span className="text-sm font-bold text-primary">{index + 1}</span>
                           </div>
                           <p className="text-muted-foreground pt-1">{step}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-
-                  {/* Results Card */}
-                  <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)]">
-                    <h3 className="text-xl font-bold mb-6 text-center">Typical Results</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      {results.map((result, index) => (
-                        <div 
-                          key={index} 
-                          className="text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                        >
-                          <div className="text-3xl font-bold text-primary mb-2">{result.value}</div>
-                          <div className="text-sm text-muted-foreground">{result.label}</div>
                         </div>
                       ))}
                     </div>
