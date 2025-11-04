@@ -1,25 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp, ChevronDown } from "lucide-react";
+import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import step1Screenshot from "@/assets/step1-screenshot.png";
 import step3Plumber from "@/assets/step3-plumber.png";
 import step3Gather from "@/assets/step3-gather.png";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 const Home = () => {
   const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
-
-  const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
 
   return (
     <div className="bg-background">
@@ -50,79 +40,54 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Mission Section */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <Collapsible open={expandedSections.mission} onOpenChange={() => toggleSection('mission')}>
-            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 group cursor-pointer">
-              <CollapsibleTrigger className="w-full">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                      <Target className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
-                    </div>
-                    <h2 className="text-3xl font-bold">What This Tool Does</h2>
+      {/* Info Banner - Combined Section */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <Card className="p-8 md:p-12 bg-[image:var(--gradient-card)] shadow-[var(--shadow-strong)]">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* What This Tool Does */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Target className="w-6 h-6 text-primary" />
                   </div>
-                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.mission ? 'rotate-180' : ''}`} />
+                  <h3 className="text-xl font-bold">What This Tool Does</h3>
                 </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <p className="text-lg text-muted-foreground leading-relaxed pt-4 animate-fade-in">
+                <p className="text-muted-foreground">
                   A singular platform that allows plug-and-play across committees and COs. This resource management system helps ground officers focus on meaningful volunteer engagement rather than data entry. Works seamlessly with WhatsApp polls, photos, and any format you already use – no disruption to your current workflow.
                 </p>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        </div>
-      </section>
+              </div>
 
-      {/* Challenge Section */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-4xl">
-          <Collapsible open={expandedSections.challenge} onOpenChange={() => toggleSection('challenge')}>
-            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 cursor-pointer">
-              <CollapsibleTrigger className="w-full">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-3xl md:text-4xl font-bold">The Pain Point</h2>
-                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.challenge ? 'rotate-180' : ''}`} />
+              {/* The Pain Point */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <AlertCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold">The Pain Point</h3>
                 </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="space-y-4 text-lg text-muted-foreground pt-6 animate-fade-in">
-                  <p>
-                    As ground officers, you know the drill: no more scrambling for Excel sheets after every event, hunting through separate files for different activities, or struggling to pull up a volunteer's full participation history when you need it.
-                  </p>
-                  <p>
-                    This fragmented approach—whether from WhatsApp polls, photos, or handwritten notes—takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
-                  </p>
-                  <p className="font-semibold text-foreground">
-                    The focus should be on managing volunteers' participation and building community, not on administrative tasks.
-                  </p>
-                </div>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        </div>
-      </section>
+                <p className="text-muted-foreground">
+                  As ground officers, you know the drill: no more scrambling for Excel sheets after every event, hunting through separate files for different activities, or struggling to pull up a volunteer's full participation history when you need it.
+                </p>
+                <p className="text-muted-foreground">
+                  This fragmented approach—whether from WhatsApp polls, photos, or handwritten notes—takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
+                </p>
+              </div>
 
-      {/* Solution Section */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <Collapsible open={expandedSections.solution} onOpenChange={() => toggleSection('solution')}>
-            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 cursor-pointer">
-              <CollapsibleTrigger className="w-full">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-3xl md:text-4xl font-bold">How It Helps You</h2>
-                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.solution ? 'rotate-180' : ''}`} />
+              {/* How It Helps You */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold">How It Helps You</h3>
                 </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <p className="text-lg text-muted-foreground text-center pt-6 animate-fade-in">
+                <p className="text-muted-foreground">
                   Works with whatever format you're already using—WhatsApp poll screenshots, photos of attendance sheets, typed notes, PDFs, or Excel files. The platform automatically extracts attendance and contributions, then syncs to GatherSG. Simple plug-and-play across all committees.
                 </p>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
+              </div>
+            </div>
+          </Card>
         </div>
       </section>
 
