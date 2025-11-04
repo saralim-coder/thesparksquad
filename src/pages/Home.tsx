@@ -83,7 +83,7 @@ const Home = () => {
                   <h3 className="text-xl font-bold">How It Helps You</h3>
                 </div>
                 <p className="text-muted-foreground">
-                  Simply type or upload your meeting minutes, event attendance, or activity notes -- whether they&apos;re in the form of your event planning documents (e.g., Nancy Tan - registration), or WhatsApp messages with your committees. The system automatically extracts attendance, captures individual contributions, and syncs everything to Gather. No more manual Excel recording – your volunteer data becomes organised, instantly accessible, and stored indefinitely for future reference.
+                  Simply type or upload your meeting minutes, event attendance, or activity notes -- whether they&apos;re in the form of your event planning documents (e.g., Nancy Tan - registration), or WhatsApp messages with your committees. The system automatically extracts volunteer attendance, captures individual contributions, and syncs everything to Gather. No more manual Excel recording – your volunteer data becomes organised, instantly accessible, and stored indefinitely for future reference.
                 </p>
               </div>
             </div>
