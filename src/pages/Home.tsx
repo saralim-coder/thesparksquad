@@ -21,13 +21,13 @@ const Home = () => {
             <span className="text-sm font-medium">The Spark Squad</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Your Volunteer Data Hub
+            Resource Management Platform
           </h1>
           <p className="text-2xl md:text-3xl mb-8 text-white/90 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            Simplifying volunteer tracking for ground officers
+            Managing Grassroots Volunteers' Participation
           </p>
           <p className="text-lg md:text-xl mb-10 text-white/80 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            An internal tool designed to help you spend less time on data entry and more time engaging with our volunteers. Automatically capture attendance, track contributions, and access complete volunteer histories.
+            A flexible CRM portal that works with your existing tools—no more scrambling for Excel sheets. Automatically capture attendance from WhatsApp polls, photos, or notes, track contributions, and build stronger community connections.
           </p>
           <Button 
             size="lg" 
@@ -51,7 +51,7 @@ const Home = () => {
               <h2 className="text-3xl font-bold">What This Tool Does</h2>
             </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              This internal system helps ground officers reduce administrative burden by automating volunteer data management. Instead of manually updating Excel files after every event, you can focus on what matters – recognising our volunteers, nurturing their contributions, and building stronger community connections.
+              A singular platform that allows plug-and-play across committees and COs. This resource management system helps ground officers focus on meaningful volunteer engagement rather than data entry. Works seamlessly with WhatsApp polls, photos, and any format you already use – no disruption to your current workflow.
             </p>
           </Card>
         </div>
@@ -63,13 +63,13 @@ const Home = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">The Pain Point</h2>
           <div className="space-y-4 text-lg text-muted-foreground">
             <p>
-              As ground officers, you know the drill: after every event, there's manual attendance recording in Excel, separate files for different activities, and the struggle to pull up a volunteer's full participation history when you need it.
+              As ground officers, you know the drill: no more scrambling for Excel sheets after every event, hunting through separate files for different activities, or struggling to pull up a volunteer's full participation history when you need it.
             </p>
             <p>
-              This fragmented data management takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
+              This fragmented approach—whether from WhatsApp polls, photos, or handwritten notes—takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
             </p>
             <p className="font-semibold text-foreground">
-              You end up spending more time on data entry than on recognising talent and nurturing the volunteers who make our grassroots work possible.
+              The focus should be on managing volunteers' participation and building community, not on administrative tasks.
             </p>
           </div>
         </div>
@@ -80,7 +80,7 @@ const Home = () => {
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">How It Helps You</h2>
           <p className="text-lg text-muted-foreground text-center mb-12">
-            Just type or upload your meeting notes after an event. The system automatically extracts attendance, captures contributions, and syncs everything to Gather. No more manual Excel updates – your volunteer data is organised and accessible instantly.
+            Works with whatever format you're already using—WhatsApp poll screenshots, photos of attendance sheets, typed notes, PDFs, or Excel files. The platform automatically extracts attendance and contributions, then syncs to GatherSG. Simple plug-and-play across all committees.
           </p>
         </div>
       </section>
@@ -199,9 +199,9 @@ const Home = () => {
       {/* Benefits Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The Real Impact: Beyond One Step Removed</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The Real Impact: Focus on People, Not Admin</h2>
           <p className="text-lg text-muted-foreground text-center mb-8 max-w-3xl mx-auto">
-            While removing the Excel data entry step might seem small, the compound benefits transform how you engage with volunteers:
+            A flexible resource management platform that works with your existing tools transforms how you manage volunteer participation and build community:
           </p>
           
           <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -246,10 +246,10 @@ const Home = () => {
                 <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
                   <TrendingUp className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Time Reallocation</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Non-Disruptive & Flexible</h3>
               </div>
               <p className="text-muted-foreground">
-                The time saved from manual data entry can be redirected to meaningful volunteer engagement activities – the real work that builds stronger communities.
+                Works alongside your current tools—WhatsApp, photos, Excel—without forcing workflow changes. Simple plug-and-play means more time for meaningful community building, less time scrambling for data.
               </p>
             </Card>
           </div>
@@ -261,10 +261,10 @@ const Home = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Use This?</h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            When you can move from scattered Excel files to centralised tracking, you get back time and gain insights. You'll spot consistent contributors faster, identify volunteers who might need re-engagement, and have complete participation histories ready for any handover or coordination needs.
+            A singular platform that works with all your existing tools—no more scrambling for Excel sheets or juggling multiple formats. Centralised volunteer participation management means you spot consistent contributors faster, identify re-engagement opportunities, and maintain complete histories across committees and COs.
           </p>
           <p className="text-xl font-semibold mt-6 text-foreground">
-            It's about giving you the tools to do your job better – less data entry, more meaningful engagement with the volunteers who make our work possible.
+            Focus on what matters: managing volunteers' participation, nurturing community connections, and building stronger grassroots engagement.
           </p>
         </div>
       </section>
