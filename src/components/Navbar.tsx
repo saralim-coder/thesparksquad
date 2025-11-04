@@ -13,6 +13,7 @@ const Navbar = () => {
     { name: "Features", path: "/features" },
     { name: "Demo", path: "/demo" },
     { name: "About", path: "/about" },
+    { name: "Tools", path: "/tools" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -32,7 +33,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -47,15 +48,6 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-          </div>
-
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Link to="/tools">
-              <Button className="hover-scale shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-300">
-                Try It Now
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -90,9 +82,6 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <Link to="/tools" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full mt-2">Try It Now</Button>
-              </Link>
             </div>
           </div>
         )}
