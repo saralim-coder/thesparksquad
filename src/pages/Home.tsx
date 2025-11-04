@@ -129,10 +129,10 @@ const Home = () => {
                 <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
                   <Users className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Cross-CO Collaboration</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">WoPA Insights</h3>
               </div>
               <p className="text-muted-foreground">
-                When volunteers participate across different COs, their full contribution profile becomes visible, enabling better coordination and avoiding volunteer burnout.
+                When volunteers participate across different COs and HQ events, their full contribution profile becomes visible, enabling better coordination and resource management.
               </p>
             </Card>
 
