@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="border-t bg-muted/30">
       <div className="container mx-auto px-4 py-6 text-center">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Volunteer Management Platform
+          &copy; {new Date().getFullYear()} Volunteer Management The Spark Squad
         </p>
       </div>
     </footer>
