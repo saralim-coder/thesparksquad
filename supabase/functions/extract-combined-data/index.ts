@@ -5,15 +5,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface Competency {
-  contributions: string;
+interface Contribution {
+  highlight: string;
 }
 
 interface ExtractedPerson {
   name: string;
   designation: string;
   nric?: string;
-  competencies: Competency[];
+  contributions: Contribution[];
 }
 
 Deno.serve(async (req) => {
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const systemContent = `You are an AI that extracts attendance and competencies from meeting notes or images. 
+    const systemContent = `You are an AI that extracts attendance and contributions from meeting notes or images. 
 
 CRITICAL RULES - READ CAREFULLY:
 1. Extract ONLY people who ATTENDED (ignore those marked as "not attended", "absent", or similar)
@@ -41,7 +41,7 @@ CRITICAL RULES - READ CAREFULLY:
    - name (required): The person's name
    - designation (optional): Their role/title if mentioned
    - nric (optional): Their Singapore NRIC if mentioned (format: S1234567A)
-   - accomplishments: Any work they did or contributions mentioned
+   - contributions: Key highlights of what they did
 
 3. Be flexible with formatting:
    - Names may be just first name or full name
@@ -52,22 +52,24 @@ CRITICAL RULES - READ CAREFULLY:
    - **ONLY** create contributions if there are EXPLICIT accomplishments or work mentioned in the meeting notes
    - **DO NOT** infer, assume, or generate contributions based on job titles or roles
    - **DO NOT** make up or imagine what someone might have done
-   - If someone's name is mentioned but NO specific accomplishments or work is described, return EMPTY competencies array
-   - The contributions field must be directly justified by text in the meeting notes
-   - contributions: A comprehensive description that includes what was accomplished, the skills demonstrated, evidence from the meeting notes, and the impact created
+   - If someone's name is mentioned but NO specific accomplishments or work is described, return EMPTY contributions array
+   - highlight: A brief, concise key highlight (1-2 sentences max) of what was accomplished
+   - Focus ONLY on the essential action or achievement - no elaboration on skills or impact
    - Be specific and evidence-based - only include what is explicitly stated
 
 5. Handle missing data gracefully:
    - If designation not found, use empty string
    - If nric not found, use empty string
-   - If no accomplishments mentioned, return empty competencies array (DO NOT make assumptions)
+   - If no accomplishments mentioned, return empty contributions array (DO NOT make assumptions)
 
 EXAMPLES:
-✅ CORRECT: "Sara, help move chairs" → name: "Sara", designation: "", accomplishments: "help move chairs", contributions: "Provided logistical support for event setup by helping move chairs, demonstrating event coordination skills and physical readiness to support team needs"
+✅ CORRECT: "Sara, help move chairs" → name: "Sara", designation: "", contributions: [{"highlight": "Helped move chairs for event setup"}]
 
-✅ CORRECT: "John Tan, Event Lead" → name: "John Tan", designation: "Event Lead", competencies: [] (empty because no accomplishments mentioned)
+✅ CORRECT: "John Tan, Event Lead" → name: "John Tan", designation: "Event Lead", contributions: [] (empty because no accomplishments mentioned)
 
 ❌ WRONG: "John Tan, Event Lead" → DO NOT create contributions like "Led the event" or "Managed team" without explicit evidence in notes
+
+❌ WRONG: Long descriptions like "Provided logistical support demonstrating coordination skills..." - Keep it SHORT and factual
 
 Return JSON in this exact structure:
 {
@@ -76,9 +78,9 @@ Return JSON in this exact structure:
       "name": "string",
       "designation": "string (empty if not found)",
       "nric": "string (empty if not found)",
-      "competencies": [
+      "contributions": [
         {
-          "contributions": "string (ONLY if explicitly justified by meeting notes)"
+          "highlight": "string (brief 1-2 sentence key highlight, ONLY if explicitly justified)"
         }
       ]
     }

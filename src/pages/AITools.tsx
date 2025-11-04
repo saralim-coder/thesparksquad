@@ -27,8 +27,8 @@ interface ExtractedData {
   name: string;
   designation: string;
   nric?: string;
-  competencies: Array<{
-    contributions: string;
+  contributions: Array<{
+    highlight: string;
   }>;
 }
 
@@ -37,7 +37,7 @@ interface FlattenedRow {
   name: string;
   designation: string;
   nric?: string;
-  contributions: string;
+  highlight: string;
 }
 
 const nricSchema = z.string().trim().regex(/^[STFGM]\d{7}[A-Z]$/i, { message: "Invalid NRIC format (e.g., S1234567A)" }).max(9, { message: "NRIC must be 9 characters" });
@@ -112,22 +112,22 @@ const AITools = () => {
             
             const flattened: FlattenedRow[] = [];
             data.extractedData.forEach((person: ExtractedData, index: number) => {
-              if (person.competencies.length === 0) {
+              if (person.contributions.length === 0) {
                 flattened.push({
                   originalIndex: index,
                   name: person.name,
                   designation: person.designation,
                   nric: person.nric,
-                  contributions: "",
+                  highlight: "",
                 });
               } else {
-                person.competencies.forEach((comp) => {
+                person.contributions.forEach((contrib) => {
                   flattened.push({
                     originalIndex: index,
                     name: person.name,
                     designation: person.designation,
                     nric: person.nric,
-                    contributions: comp.contributions,
+                    highlight: contrib.highlight,
                   });
                 });
               }
@@ -137,7 +137,7 @@ const AITools = () => {
             
             toast({
               title: "Extraction complete!",
-              description: `Found ${data.extractedData.length} attendees with ${flattened.length} total competencies`,
+              description: `Found ${data.extractedData.length} attendees with ${flattened.length} total contributions`,
             });
             resolve(null);
           } catch (error) {
@@ -204,27 +204,27 @@ const AITools = () => {
 
       setExtractedData(data.extractedData);
       
-      // Flatten data: each competency becomes a row
+      // Flatten data: each contribution becomes a row
       const flattened: FlattenedRow[] = [];
       data.extractedData.forEach((person: ExtractedData, index: number) => {
-        if (person.competencies.length === 0) {
-          // Person with no competencies still gets one row
+        if (person.contributions.length === 0) {
+          // Person with no contributions still gets one row
           flattened.push({
             originalIndex: index,
             name: person.name,
             designation: person.designation,
             nric: person.nric,
-            contributions: "",
+            highlight: "",
           });
         } else {
-          // Each competency gets its own row
-          person.competencies.forEach((comp) => {
+          // Each contribution gets its own row
+          person.contributions.forEach((contrib) => {
             flattened.push({
               originalIndex: index,
               name: person.name,
               designation: person.designation,
               nric: person.nric,
-              contributions: comp.contributions,
+              highlight: contrib.highlight,
             });
           });
         }
@@ -234,7 +234,7 @@ const AITools = () => {
       
       toast({
         title: "Extraction complete!",
-        description: `Found ${data.extractedData.length} attendees with ${flattened.length} total competencies`,
+        description: `Found ${data.extractedData.length} attendees with ${flattened.length} total contributions`,
       });
     } catch (error) {
       console.error("Error extracting data:", error);
@@ -413,7 +413,7 @@ Maria Santos, Communications Manager`;
             One Volunteer at a Time
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Extract attendance and competencies from meeting notes, then send directly to GatherSG
+            Extract attendance and key contribution highlights from meeting notes, then send directly to GatherSG
           </p>
         </div>
 
@@ -468,7 +468,7 @@ Maria Santos, Communications Manager`;
                   className="font-mono text-sm"
                 />
                 <p className="text-sm text-muted-foreground">
-                  AI will extract names, designations, NRICs and competencies from accomplishments. If the data is not available, it will be blank.
+                  AI will extract names, designations, NRICs and key contribution highlights. If the data is not available, it will be blank.
                 </p>
               </div>
 
@@ -567,7 +567,7 @@ Maria Santos, Communications Manager`;
                         <TableHead>Name</TableHead>
                         <TableHead>Designation</TableHead>
                         <TableHead>NRIC *</TableHead>
-                        <TableHead>Contributions</TableHead>
+                        <TableHead>Key Highlights</TableHead>
                         <TableHead className="text-center w-32">Action</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -619,9 +619,9 @@ Maria Santos, Communications Manager`;
                           </TableCell>
                           <TableCell>
                             <Textarea
-                              placeholder="Contributions"
-                              value={row.contributions || ""}
-                              onChange={(e) => handleFieldChange(index, 'contributions', e.target.value)}
+                              placeholder="Key Highlights"
+                              value={row.highlight || ""}
+                              onChange={(e) => handleFieldChange(index, 'highlight', e.target.value)}
                               className="min-w-[300px] min-h-[80px]"
                               rows={3}
                             />
