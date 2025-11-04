@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { meetingNotes, eventName, imageData } = await req.json();
+    const { meetingNotes, eventName, imageData, fileType } = await req.json();
 
     if (!eventName || (!meetingNotes && !imageData)) {
       throw new Error("Missing required fields");
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const systemContent = `You are an AI that extracts attendance and contributions from meeting notes or images. 
+    const systemContent = `You are an AI that extracts attendance and contributions from meeting notes, images, PDF documents, or Excel spreadsheets. 
 
 CRITICAL RULES - READ CAREFULLY:
 1. Extract ONLY people who ATTENDED (ignore those marked as "not attended", "absent", or similar)
@@ -47,9 +47,10 @@ CRITICAL RULES - READ CAREFULLY:
    - Names may be just first name or full name
    - Designation might be after comma, dash, parentheses, or on separate line
    - NRIC might be explicitly stated or not present at all
+   - For PDFs and Excel files: Look for tabular data, lists, or structured information
 
 4. STRICT CONTRIBUTIONS EXTRACTION RULES:
-   - **ONLY** create contributions if there are EXPLICIT accomplishments or work mentioned in the meeting notes
+   - **ONLY** create contributions if there are EXPLICIT accomplishments or work mentioned
    - **DO NOT** infer, assume, or generate contributions based on job titles or roles
    - **DO NOT** make up or imagine what someone might have done
    - If someone's name is mentioned but NO specific accomplishments or work is described, return EMPTY contributions array
@@ -60,16 +61,19 @@ CRITICAL RULES - READ CAREFULLY:
 5. Handle missing data gracefully:
    - If designation not found, use empty string
    - If nric not found, use empty string
-   - If no accomplishments mentioned, return empty contributions array (DO NOT make assumptions)
+   - If no accomplishments mentioned, return empty contributions array
+
+6. FILE-SPECIFIC HANDLING:
+   - For Excel/spreadsheet files: Look for columns like "Name", "Role", "NRIC", "Contributions", "Highlights"
+   - For PDF documents: Scan through text and tables systematically
+   - For images: Use OCR capabilities to read handwritten or typed text
 
 EXAMPLES:
 ✅ CORRECT: "Sara, help move chairs" → name: "Sara", designation: "", contributions: [{"highlight": "Helped move chairs for event setup"}]
 
 ✅ CORRECT: "John Tan, Event Lead" → name: "John Tan", designation: "Event Lead", contributions: [] (empty because no accomplishments mentioned)
 
-❌ WRONG: "John Tan, Event Lead" → DO NOT create contributions like "Led the event" or "Managed team" without explicit evidence in notes
-
-❌ WRONG: Long descriptions like "Provided logistical support demonstrating coordination skills..." - Keep it SHORT and factual
+❌ WRONG: "John Tan, Event Lead" → DO NOT create contributions like "Led the event" without explicit evidence
 
 Return JSON in this exact structure:
 {
@@ -89,12 +93,13 @@ Return JSON in this exact structure:
 
     let messages;
     if (imageData) {
+      const fileTypeText = fileType || "image or document";
       messages = [
         { role: "system", content: systemContent },
         { 
           role: "user", 
           content: [
-            { type: "text", text: `Event: ${eventName}\n\nPlease extract attendance and competency information from this image:` },
+            { type: "text", text: `Event: ${eventName}\n\nPlease extract attendance and contribution information from this ${fileTypeText}. Pay special attention to any tabular data, lists, or structured information.` },
             { type: "image_url", image_url: { url: imageData } }
           ]
         }

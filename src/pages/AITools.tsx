@@ -79,110 +79,71 @@ const AITools = () => {
       const fileType = selectedFile.type;
       const fileName = selectedFile.name.toLowerCase();
       
-      // Check if it's an image
-      if (fileType.startsWith('image/')) {
-        // Handle image files
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
-        
-        await new Promise((resolve, reject) => {
-          reader.onload = async () => {
-            try {
-              const base64Image = reader.result as string;
-              
-              const { data, error } = await supabase.functions.invoke("extract-combined-data", {
-                body: { imageData: base64Image, eventName },
-              });
-
-              if (error) {
-                if (error.message.includes("429")) {
-                  toast({
-                    title: "Rate limit exceeded",
-                    description: "Please try again in a few moments",
-                    variant: "destructive",
-                  });
-                } else if (error.message.includes("402")) {
-                  toast({
-                    title: "Credits required",
-                    description: "Please add credits to your workspace",
-                    variant: "destructive",
-                  });
-                } else {
-                  throw error;
-                }
-                return;
-              }
-
-              processExtractedData(data);
-              resolve(null);
-            } catch (error) {
-              reject(error);
+      // Handle all file types by converting to base64 for AI processing
+      // Images, PDFs, and Excel files can all be processed visually by the AI
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      
+      await new Promise((resolve, reject) => {
+        reader.onload = async () => {
+          try {
+            const base64Data = reader.result as string;
+            
+            // Determine file type for better prompt
+            let fileTypeDescription = "document";
+            if (fileType.startsWith('image/')) {
+              fileTypeDescription = "image";
+            } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
+              fileTypeDescription = "PDF document";
+            } else if (fileType.includes('spreadsheet') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+              fileTypeDescription = "Excel spreadsheet";
             }
-          };
-          reader.onerror = reject;
-        });
-      } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf') || 
-                 fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                 fileType === 'application/vnd.ms-excel' || 
-                 fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-        // Handle PDF and Excel files - parse them first
-        toast({
-          title: "Processing file...",
-          description: "Extracting text from your document",
-        });
 
-        // For PDF/Excel, we'll read as text and send to extraction
-        const reader = new FileReader();
-        reader.readAsText(selectedFile);
-        
-        await new Promise((resolve, reject) => {
-          reader.onload = async () => {
-            try {
-              const textContent = reader.result as string;
-              
-              const { data, error } = await supabase.functions.invoke("extract-combined-data", {
-                body: { meetingNotes: textContent, eventName },
-              });
+            toast({
+              title: "Processing file...",
+              description: `Analyzing ${fileTypeDescription} and extracting volunteer data`,
+            });
+            
+            const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+              body: { 
+                imageData: base64Data, 
+                eventName,
+                fileType: fileTypeDescription 
+              },
+            });
 
-              if (error) {
-                if (error.message.includes("429")) {
-                  toast({
-                    title: "Rate limit exceeded",
-                    description: "Please try again in a few moments",
-                    variant: "destructive",
-                  });
-                } else if (error.message.includes("402")) {
-                  toast({
-                    title: "Credits required",
-                    description: "Please add credits to your workspace",
-                    variant: "destructive",
-                  });
-                } else {
-                  throw error;
-                }
-                return;
+            if (error) {
+              if (error.message.includes("429")) {
+                toast({
+                  title: "Rate limit exceeded",
+                  description: "Please try again in a few moments",
+                  variant: "destructive",
+                });
+              } else if (error.message.includes("402")) {
+                toast({
+                  title: "Credits required",
+                  description: "Please add credits to your workspace",
+                  variant: "destructive",
+                });
+              } else {
+                throw error;
               }
-
-              processExtractedData(data);
-              resolve(null);
-            } catch (error) {
-              reject(error);
+              return;
             }
-          };
-          reader.onerror = reject;
-        });
-      } else {
-        toast({
-          title: "Unsupported file type",
-          description: "Please upload an image, PDF, or Excel file",
-          variant: "destructive",
-        });
-      }
+
+            processExtractedData(data);
+            resolve(null);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+      });
     } catch (error) {
       console.error("Error extracting data from file:", error);
       toast({
         title: "Extraction failed",
-        description: "Unable to extract data from file. Please try again.",
+        description: "Unable to extract data from file. Please ensure the file is readable and try again.",
         variant: "destructive",
       });
     } finally {
@@ -544,7 +505,7 @@ Maria Santos, Communications Manager`;
                   </p>
                 )}
                 <p className="text-sm text-muted-foreground">
-                  Upload an image, PDF, or Excel file containing meeting notes, attendance list, or participant information
+                  Upload images (photos, WhatsApp screenshots), PDF documents, or Excel spreadsheets. Our AI will analyze them and extract volunteer data with improved accuracy for all file types.
                 </p>
               </div>
 
