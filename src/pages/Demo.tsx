@@ -25,10 +25,10 @@ const Demo = () => {
 
       {/* How It Works Section */}
       <section className="py-16 px-4">
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-5xl">
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">How It Works</h2>
           
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-8">
             <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
