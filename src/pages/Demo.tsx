@@ -11,7 +11,6 @@ import step3Gather from "@/assets/step3-gather.png";
 const Demo = () => {
   const navigate = useNavigate();
   const [activeDemo, setActiveDemo] = useState("text");
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   const demoScenarios = [
     {
@@ -151,25 +150,21 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">How It Works</h2>
           
           <div className="grid md:grid-cols-2 gap-8">
-            <Card 
-              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredCard(0)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 0 ? 'scale-110 bg-primary/20' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   1
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Input Made Simple</h3>
+                <h3 className="text-xl font-bold">Input Made Simple</h3>
               </div>
-              <div className="overflow-hidden">
+              <div className="mb-4">
                 <img 
                   src={step1Screenshot} 
                   alt="Step 1: Input interface showing event name, meeting notes, and upload options" 
-                  className={`w-full rounded-lg mb-4 shadow-md transition-all duration-500 ${hoveredCard === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 h-0 mb-0'}`}
+                  className="w-full rounded-lg shadow-md"
                 />
               </div>
-              <ul className={`space-y-2 text-muted-foreground transition-all duration-500 ${hoveredCard === 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+              <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   <span>Type or paste meeting notes directly into our platform</span>
@@ -185,18 +180,14 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
               </ul>
             </Card>
 
-            <Card 
-              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredCard(1)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 1 ? 'scale-110 bg-primary/20' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   2
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Automatic Organisation</h3>
+                <h3 className="text-xl font-bold">Automatic Organisation</h3>
               </div>
-              <div className={`transition-all duration-500 ${hoveredCard === 1 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+              <div>
                 <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
@@ -215,18 +206,14 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
               </div>
             </Card>
 
-            <Card 
-              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredCard(2)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 2 ? 'scale-110 bg-primary/20' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   3
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Seamless Integration with Gather through Plumber Webhooks</h3>
+                <h3 className="text-xl font-bold">Seamless Integration with Gather through Plumber Webhooks</h3>
               </div>
-              <div className={`transition-all duration-500 ${hoveredCard === 2 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+              <div>
                 <p className="text-muted-foreground mb-4">
                   Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
                 </p>
@@ -238,18 +225,14 @@ Mike Wong - Community Outreach - Led senior citizens tech literacy session with 
               </div>
             </Card>
 
-            <Card 
-              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredCard(3)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 3 ? 'scale-110 bg-primary/20' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   4
                 </div>
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Instant Profile Access</h3>
+                <h3 className="text-xl font-bold">Instant Profile Access</h3>
               </div>
-              <div className={`transition-all duration-500 ${hoveredCard === 3 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+              <div>
                 <p className="text-muted-foreground mb-4">
                   Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
                 </p>
