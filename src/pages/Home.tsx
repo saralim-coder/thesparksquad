@@ -58,10 +58,13 @@ const Home = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">The Challenge We're Solving</h2>
           <div className="space-y-4 text-lg text-muted-foreground">
             <p>
-              Ground officers across Singapore's Constituency Offices face a common struggle: valuable time and energy are consumed by complex, repetitive administrative tasks. Manual processes, fragmented systems, and duplicative workflows create barriers between officers and the communities they serve.
+              Ground officers spend significant time on fragmented volunteer data management – manually recording attendance, maintaining separate Excel files, and struggling to access comprehensive volunteer participation histories.
+            </p>
+            <p>
+              This administrative burden reduces time available for meaningful volunteer engagement and recognition, while making handovers and cross-CO coordination challenging.
             </p>
             <p className="font-semibold text-foreground">
-              The result? Less meaningful engagement with residents and missed opportunities to cultivate the volunteer spirit that makes Singapore's grassroots movement so powerful.
+              The result? Less time for recognising talent, nurturing contributions, and building the vibrant community connections that make Singapore's grassroots movement so powerful.
             </p>
           </div>
         </div>
@@ -175,27 +178,51 @@ const Home = () => {
       {/* Benefits Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The Complete Benefits</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The Real Impact: Beyond One Step Removed</h2>
+          <p className="text-lg text-muted-foreground text-center mb-8 max-w-3xl mx-auto">
+            While removing the Excel data entry step might seem small, the compound benefits transform how you engage with volunteers:
+          </p>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              "Save Hours Weekly – No more manual data entry",
-              "Never Miss Talent – Automatically capture volunteer skills",
-              "Enhance Recognition – Track contributions systematically",
-              "Improve Matching – Connect volunteers with suitable opportunities",
-              "Streamlined Tracking – Direct integration with Gather",
-              "Instant Profile Access – Search volunteer history by email",
-              "Build Stronger Records – Comprehensive volunteer profiles",
-              "Better Follow-up – Track every volunteer interaction",
-              "Personalised Engagement – Access complete volunteer journey"
-            ].map((benefit, index) => (
-              <Card key={index} className="p-4 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-[var(--transition-smooth)]">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">{benefit}</p>
-                </div>
-              </Card>
-            ))}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+              <div className="flex items-start gap-3 mb-3">
+                <Database className="w-6 h-6 text-primary flex-shrink-0" />
+                <h3 className="text-xl font-bold">Data Accessibility & Continuity</h3>
+              </div>
+              <p className="text-muted-foreground">
+                Instead of attendance data sitting in individual Excel files, centralised access means any staff member can instantly view historical participation patterns – crucial for handovers or when volunteers move between committees.
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+              <div className="flex items-start gap-3 mb-3">
+                <Sparkles className="w-6 h-6 text-primary flex-shrink-0" />
+                <h3 className="text-xl font-bold">Recognition & Engagement</h3>
+              </div>
+              <p className="text-muted-foreground">
+                With consolidated data, easily identify consistent contributors, spot declining participation early, and tailor recognition efforts – directly supporting your "recognise, spark, and nurture" objective.
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+              <div className="flex items-start gap-3 mb-3">
+                <Users className="w-6 h-6 text-primary flex-shrink-0" />
+                <h3 className="text-xl font-bold">Cross-CO Collaboration</h3>
+              </div>
+              <p className="text-muted-foreground">
+                When volunteers participate across different COs, their full contribution profile becomes visible, enabling better coordination and avoiding volunteer burnout.
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+              <div className="flex items-start gap-3 mb-3">
+                <TrendingUp className="w-6 h-6 text-primary flex-shrink-0" />
+                <h3 className="text-xl font-bold">Time Reallocation</h3>
+              </div>
+              <p className="text-muted-foreground">
+                The time saved from manual data entry can be redirected to meaningful volunteer engagement activities – the real work that builds stronger communities.
+              </p>
+            </Card>
           </div>
         </div>
       </section>
@@ -205,10 +232,10 @@ const Home = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Why It Matters</h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Strong communities are built on strong volunteer networks. When Constituency Office colleagues can efficiently capture, organise, track, and instantly access volunteer information, they create space for deeper relationships, better recognition of contributions, and more strategic volunteer engagement.
+            Strong communities are built on strong volunteer networks. When ground officers can move from fragmented data management to seamless tracking, they unlock time and insight for what truly matters – recognising consistent contributors, nurturing emerging talent, and building deeper community connections.
           </p>
           <p className="text-xl font-semibold mt-6 text-foreground">
-            Together, we're not just improving processes – we're building a truly we-first society where every volunteer feels valued, every contribution is recognised, and every community connection sparks positive change.
+            We're not just removing a step – we're creating continuity, enabling collaboration, and empowering every Constituency Office to build a truly we-first society where every volunteer feels valued and every contribution sparks positive change.
           </p>
         </div>
       </section>
