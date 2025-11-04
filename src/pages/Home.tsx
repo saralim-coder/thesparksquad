@@ -1,15 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp } from "lucide-react";
+import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import step1Screenshot from "@/assets/step1-screenshot.png";
 import step3Plumber from "@/assets/step3-plumber.png";
 import step3Gather from "@/assets/step3-gather.png";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const Home = () => {
   const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -43,45 +53,76 @@ const Home = () => {
       {/* Mission Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 group">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                <Target className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <h2 className="text-3xl font-bold">What This Tool Does</h2>
-            </div>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              A singular platform that allows plug-and-play across committees and COs. This resource management system helps ground officers focus on meaningful volunteer engagement rather than data entry. Works seamlessly with WhatsApp polls, photos, and any format you already use – no disruption to your current workflow.
-            </p>
-          </Card>
+          <Collapsible open={expandedSections.mission} onOpenChange={() => toggleSection('mission')}>
+            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 group cursor-pointer">
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                      <Target className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    <h2 className="text-3xl font-bold">What This Tool Does</h2>
+                  </div>
+                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.mission ? 'rotate-180' : ''}`} />
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <p className="text-lg text-muted-foreground leading-relaxed pt-4 animate-fade-in">
+                  A singular platform that allows plug-and-play across committees and COs. This resource management system helps ground officers focus on meaningful volunteer engagement rather than data entry. Works seamlessly with WhatsApp polls, photos, and any format you already use – no disruption to your current workflow.
+                </p>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </div>
       </section>
 
       {/* Challenge Section */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">The Pain Point</h2>
-          <div className="space-y-4 text-lg text-muted-foreground">
-            <p>
-              As ground officers, you know the drill: no more scrambling for Excel sheets after every event, hunting through separate files for different activities, or struggling to pull up a volunteer's full participation history when you need it.
-            </p>
-            <p>
-              This fragmented approach—whether from WhatsApp polls, photos, or handwritten notes—takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
-            </p>
-            <p className="font-semibold text-foreground">
-              The focus should be on managing volunteers' participation and building community, not on administrative tasks.
-            </p>
-          </div>
+          <Collapsible open={expandedSections.challenge} onOpenChange={() => toggleSection('challenge')}>
+            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 cursor-pointer">
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl md:text-4xl font-bold">The Pain Point</h2>
+                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.challenge ? 'rotate-180' : ''}`} />
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-4 text-lg text-muted-foreground pt-6 animate-fade-in">
+                  <p>
+                    As ground officers, you know the drill: no more scrambling for Excel sheets after every event, hunting through separate files for different activities, or struggling to pull up a volunteer's full participation history when you need it.
+                  </p>
+                  <p>
+                    This fragmented approach—whether from WhatsApp polls, photos, or handwritten notes—takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
+                  </p>
+                  <p className="font-semibold text-foreground">
+                    The focus should be on managing volunteers' participation and building community, not on administrative tasks.
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </div>
       </section>
 
       {/* Solution Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">How It Helps You</h2>
-          <p className="text-lg text-muted-foreground text-center mb-12">
-            Works with whatever format you're already using—WhatsApp poll screenshots, photos of attendance sheets, typed notes, PDFs, or Excel files. The platform automatically extracts attendance and contributions, then syncs to GatherSG. Simple plug-and-play across all committees.
-          </p>
+          <Collapsible open={expandedSections.solution} onOpenChange={() => toggleSection('solution')}>
+            <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 cursor-pointer">
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl md:text-4xl font-bold">How It Helps You</h2>
+                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${expandedSections.solution ? 'rotate-180' : ''}`} />
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <p className="text-lg text-muted-foreground text-center pt-6 animate-fade-in">
+                  Works with whatever format you're already using—WhatsApp poll screenshots, photos of attendance sheets, typed notes, PDFs, or Excel files. The platform automatically extracts attendance and contributions, then syncs to GatherSG. Simple plug-and-play across all committees.
+                </p>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </div>
       </section>
 
@@ -102,12 +143,14 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Input Made Simple</h3>
               </div>
-              <img 
-                src={step1Screenshot} 
-                alt="Step 1: Input interface showing event name, meeting notes, and upload options" 
-                className="w-full rounded-lg mb-4 shadow-md"
-              />
-              <ul className="space-y-2 text-muted-foreground">
+              <div className="overflow-hidden">
+                <img 
+                  src={step1Screenshot} 
+                  alt="Step 1: Input interface showing event name, meeting notes, and upload options" 
+                  className={`w-full rounded-lg mb-4 shadow-md transition-all duration-500 ${hoveredCard === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 h-0 mb-0'}`}
+                />
+              </div>
+              <ul className={`space-y-2 text-muted-foreground transition-all duration-500 ${hoveredCard === 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   <span>Type or paste meeting notes directly into our platform</span>
@@ -134,21 +177,23 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Automatic Organisation</h3>
               </div>
-              <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <Database className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <span><strong>Event Name</strong> – Track which activities volunteers participated in</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <span><strong>Name & Designation</strong> – Maintain accurate volunteer records</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <span><strong>Skills & Evidence</strong> – Document contributions and measure success</span>
-                </li>
-              </ul>
+              <div className={`transition-all duration-500 ${hoveredCard === 1 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+                <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Database className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>Event Name</strong> – Track which activities volunteers participated in</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>Name & Designation</strong> – Maintain accurate volunteer records</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>Skills & Evidence</strong> – Document contributions and measure success</span>
+                  </li>
+                </ul>
+              </div>
             </Card>
 
             <Card 
@@ -162,14 +207,16 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Seamless Integration with Gather through Plumber Webhooks</h3>
               </div>
-              <p className="text-muted-foreground mb-4">
-                Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
-              </p>
-              <img 
-                src={step3Plumber} 
-                alt="Plumber webhook configuration showing successful data transmission" 
-                className="w-full rounded-lg shadow-md"
-              />
+              <div className={`transition-all duration-500 ${hoveredCard === 2 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+                <p className="text-muted-foreground mb-4">
+                  Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
+                </p>
+                <img 
+                  src={step3Plumber} 
+                  alt="Plumber webhook configuration showing successful data transmission" 
+                  className="w-full rounded-lg shadow-md"
+                />
+              </div>
             </Card>
 
             <Card 
@@ -183,14 +230,16 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Instant Profile Access</h3>
               </div>
-              <p className="text-muted-foreground mb-4">
-                Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
-              </p>
-              <img 
-                src={step3Gather} 
-                alt="Gather case management system displaying complete volunteer profile and history" 
-                className="w-full rounded-lg shadow-md"
-              />
+              <div className={`transition-all duration-500 ${hoveredCard === 3 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+                <p className="text-muted-foreground mb-4">
+                  Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
+                </p>
+                <img 
+                  src={step3Gather} 
+                  alt="Gather case management system displaying complete volunteer profile and history" 
+                  className="w-full rounded-lg shadow-md"
+                />
+              </div>
             </Card>
           </div>
         </div>
