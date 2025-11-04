@@ -21,7 +21,7 @@ const Home = () => {
             <span className="text-sm font-medium">The Spark Squad</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Resource Management Platform
+            Volunteers Hub
           </h1>
           <p className="text-2xl md:text-3xl mb-8 text-white/90 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             Managing Grassroots Volunteers' Participation
@@ -96,7 +96,7 @@ const Home = () => {
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The Real Impact: Focus on People, Not Admin</h2>
           <p className="text-lg text-muted-foreground text-center mb-8 max-w-3xl mx-auto">
-            A flexible resource management platform that works with your existing tools transforms how you manage volunteer participation and build community:
+            A flexible volunteers hub that works with your existing tools transforms how you manage volunteer participation and build community:
           </p>
           
           <div className="grid md:grid-cols-2 gap-6 mb-8">
