@@ -19,20 +19,20 @@ const Home = () => {
             <span className="text-sm font-medium">The Spark Squad</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Empowering Community Connections
+            Your Volunteer Data Hub
           </h1>
           <p className="text-2xl md:text-3xl mb-8 text-white/90">
-            Igniting Volunteer Engagement, One Connection at a Time
+            Simplifying volunteer tracking for ground officers
           </p>
           <p className="text-lg md:text-xl mb-10 text-white/80 max-w-3xl mx-auto">
-            Welcome to The Spark Squad – where we transform how Constituency Offices manage and nurture grassroots volunteer participation. We're here to help you spend less time on paperwork and more time building the vibrant, connected communities Singapore deserves.
+            An internal tool designed to help you spend less time on data entry and more time engaging with our volunteers. Automatically capture attendance, track contributions, and access complete volunteer histories.
           </p>
           <Button 
             size="lg" 
             onClick={() => navigate('/tools')}
             className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 py-6"
           >
-            Get Started Today
+            Start Using The Tool
           </Button>
         </div>
       </section>
@@ -43,10 +43,10 @@ const Home = () => {
           <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)]">
             <div className="flex items-center gap-3 mb-4">
               <Target className="w-8 h-8 text-primary" />
-              <h2 className="text-3xl font-bold">Our Mission</h2>
+              <h2 className="text-3xl font-bold">What This Tool Does</h2>
             </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              We believe every volunteer has the potential to spark positive change in their community. By streamlining administrative processes and enhancing volunteer management, we empower Constituency Office colleagues to focus on what truly matters – recognising talent, nurturing contributions, and building stronger bonds between residents and their communities.
+              This internal system helps ground officers reduce administrative burden by automating volunteer data management. Instead of manually updating Excel files after every event, you can focus on what matters – recognising our volunteers, nurturing their contributions, and building stronger community connections.
             </p>
           </Card>
         </div>
@@ -55,16 +55,16 @@ const Home = () => {
       {/* Challenge Section */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">The Challenge We're Solving</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">The Pain Point</h2>
           <div className="space-y-4 text-lg text-muted-foreground">
             <p>
-              Ground officers spend significant time on fragmented volunteer data management – manually recording attendance, maintaining separate Excel files, and struggling to access comprehensive volunteer participation histories.
+              As ground officers, you know the drill: after every event, there's manual attendance recording in Excel, separate files for different activities, and the struggle to pull up a volunteer's full participation history when you need it.
             </p>
             <p>
-              This administrative burden reduces time available for meaningful volunteer engagement and recognition, while making handovers and cross-CO coordination challenging.
+              This fragmented data management takes time away from actual engagement, makes handovers difficult, and creates coordination gaps when volunteers participate across different COs.
             </p>
             <p className="font-semibold text-foreground">
-              The result? Less time for recognising talent, nurturing contributions, and building the vibrant community connections that make Singapore's grassroots movement so powerful.
+              You end up spending more time on data entry than on recognising talent and nurturing the volunteers who make our grassroots work possible.
             </p>
           </div>
         </div>
@@ -73,9 +73,9 @@ const Home = () => {
       {/* Solution Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Our Smart Solution</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">How It Helps You</h2>
           <p className="text-lg text-muted-foreground text-center mb-12">
-            The Spark Squad transforms volunteer management from burden to breakthrough with our intelligent data organisation, tracking, and retrieval system. Simply input your meeting notes or upload images, and watch as our platform automatically structures volunteer information and seamlessly integrates with your existing workflow.
+            Just type or upload your meeting notes after an event. The system automatically extracts attendance, captures contributions, and syncs everything to Gather. No more manual Excel updates – your volunteer data is organised and accessible instantly.
           </p>
         </div>
       </section>
@@ -230,12 +230,12 @@ const Home = () => {
       {/* Why It Matters */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Why It Matters</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Use This?</h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Strong communities are built on strong volunteer networks. When ground officers can move from fragmented data management to seamless tracking, they unlock time and insight for what truly matters – recognising consistent contributors, nurturing emerging talent, and building deeper community connections.
+            When you can move from scattered Excel files to centralised tracking, you get back time and gain insights. You'll spot consistent contributors faster, identify volunteers who might need re-engagement, and have complete participation histories ready for any handover or coordination needs.
           </p>
           <p className="text-xl font-semibold mt-6 text-foreground">
-            We're not just removing a step – we're creating continuity, enabling collaboration, and empowering every Constituency Office to build a truly we-first society where every volunteer feels valued and every contribution sparks positive change.
+            It's about giving you the tools to do your job better – less data entry, more meaningful engagement with the volunteers who make our work possible.
           </p>
         </div>
       </section>
@@ -243,19 +243,19 @@ const Home = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Volunteer Management?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Try It?</h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Experience the power of intelligent volunteer data organisation with seamless Gather integration and instant profile access. Let The Spark Squad help your team focus on what matters most – building stronger, more connected communities across Singapore.
+            Start using the tool to streamline your volunteer tracking. Enter your meeting notes, let the system handle the data extraction, and have everything sync to Gather automatically. More time for engagement, less time on admin.
           </p>
           <Button 
             size="lg" 
             onClick={() => navigate('/tools')}
             className="text-lg px-8 py-6 shadow-[var(--shadow-medium)]"
           >
-            Get Started Today
+            Start Using The Tool
           </Button>
           <p className="text-sm text-muted-foreground mt-4">
-            Discover how simple, connected, and insightful volunteer management can be
+            Simple volunteer tracking for busy ground officers
           </p>
         </div>
       </section>
