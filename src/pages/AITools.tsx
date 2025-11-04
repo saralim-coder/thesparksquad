@@ -48,14 +48,14 @@ const AITools = () => {
   const [meetingNotes, setMeetingNotes] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const [nricErrors, setNricErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleImageExtract = async () => {
+  const handleFileExtract = async () => {
     if (!eventName.trim()) {
       toast({
         title: "Event name required",
@@ -65,10 +65,10 @@ const AITools = () => {
       return;
     }
 
-    if (!selectedImage) {
+    if (!selectedFile) {
       toast({
-        title: "Image required",
-        description: "Please upload an image",
+        title: "File required",
+        description: "Please upload a file",
         variant: "destructive",
       });
       return;
@@ -76,86 +76,152 @@ const AITools = () => {
 
     setIsLoading(true);
     try {
-      // Convert image to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedImage);
+      const fileType = selectedFile.type;
+      const fileName = selectedFile.name.toLowerCase();
       
-      await new Promise((resolve, reject) => {
-        reader.onload = async () => {
-          try {
-            const base64Image = reader.result as string;
-            
-            const { data, error } = await supabase.functions.invoke("extract-combined-data", {
-              body: { imageData: base64Image, eventName },
-            });
+      // Check if it's an image
+      if (fileType.startsWith('image/')) {
+        // Handle image files
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        
+        await new Promise((resolve, reject) => {
+          reader.onload = async () => {
+            try {
+              const base64Image = reader.result as string;
+              
+              const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+                body: { imageData: base64Image, eventName },
+              });
 
-            if (error) {
-              if (error.message.includes("429")) {
-                toast({
-                  title: "Rate limit exceeded",
-                  description: "Please try again in a few moments",
-                  variant: "destructive",
-                });
-              } else if (error.message.includes("402")) {
-                toast({
-                  title: "Credits required",
-                  description: "Please add credits to your workspace",
-                  variant: "destructive",
-                });
-              } else {
-                throw error;
-              }
-              return;
-            }
-
-            setExtractedData(data.extractedData);
-            
-            const flattened: FlattenedRow[] = [];
-            data.extractedData.forEach((person: ExtractedData, index: number) => {
-              if (person.contributions.length === 0) {
-                flattened.push({
-                  originalIndex: index,
-                  name: person.name,
-                  designation: person.designation,
-                  nric: person.nric,
-                  highlight: "",
-                });
-              } else {
-                person.contributions.forEach((contrib) => {
-                  flattened.push({
-                    originalIndex: index,
-                    name: person.name,
-                    designation: person.designation,
-                    nric: person.nric,
-                    highlight: contrib.highlight,
+              if (error) {
+                if (error.message.includes("429")) {
+                  toast({
+                    title: "Rate limit exceeded",
+                    description: "Please try again in a few moments",
+                    variant: "destructive",
                   });
-                });
+                } else if (error.message.includes("402")) {
+                  toast({
+                    title: "Credits required",
+                    description: "Please add credits to your workspace",
+                    variant: "destructive",
+                  });
+                } else {
+                  throw error;
+                }
+                return;
               }
-            });
-            
-            setFlattenedRows(flattened);
-            
-            toast({
-              title: "Extraction complete!",
-              description: `Found ${data.extractedData.length} attendees with ${flattened.length} total contributions`,
-            });
-            resolve(null);
-          } catch (error) {
-            reject(error);
-          }
-        };
-        reader.onerror = reject;
-      });
+
+              processExtractedData(data);
+              resolve(null);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          reader.onerror = reject;
+        });
+      } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf') || 
+                 fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                 fileType === 'application/vnd.ms-excel' || 
+                 fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        // Handle PDF and Excel files - parse them first
+        toast({
+          title: "Processing file...",
+          description: "Extracting text from your document",
+        });
+
+        // For PDF/Excel, we'll read as text and send to extraction
+        const reader = new FileReader();
+        reader.readAsText(selectedFile);
+        
+        await new Promise((resolve, reject) => {
+          reader.onload = async () => {
+            try {
+              const textContent = reader.result as string;
+              
+              const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+                body: { meetingNotes: textContent, eventName },
+              });
+
+              if (error) {
+                if (error.message.includes("429")) {
+                  toast({
+                    title: "Rate limit exceeded",
+                    description: "Please try again in a few moments",
+                    variant: "destructive",
+                  });
+                } else if (error.message.includes("402")) {
+                  toast({
+                    title: "Credits required",
+                    description: "Please add credits to your workspace",
+                    variant: "destructive",
+                  });
+                } else {
+                  throw error;
+                }
+                return;
+              }
+
+              processExtractedData(data);
+              resolve(null);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          reader.onerror = reject;
+        });
+      } else {
+        toast({
+          title: "Unsupported file type",
+          description: "Please upload an image, PDF, or Excel file",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
-      console.error("Error extracting data from image:", error);
+      console.error("Error extracting data from file:", error);
       toast({
         title: "Extraction failed",
-        description: "Unable to extract data from image. Please try again.",
+        description: "Unable to extract data from file. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const processExtractedData = (data: any) => {
+    setExtractedData(data.extractedData);
+    
+    const flattened: FlattenedRow[] = [];
+    data.extractedData.forEach((person: ExtractedData, index: number) => {
+      if (person.contributions.length === 0) {
+        flattened.push({
+          originalIndex: index,
+          name: person.name,
+          designation: person.designation,
+          nric: person.nric,
+          highlight: "",
+        });
+      } else {
+        person.contributions.forEach((contrib) => {
+          flattened.push({
+            originalIndex: index,
+            name: person.name,
+            designation: person.designation,
+            nric: person.nric,
+            highlight: contrib.highlight,
+          });
+        });
+      }
+    });
+    
+    setFlattenedRows(flattened);
+    
+    toast({
+      title: "Extraction complete!",
+      description: `Found ${data.extractedData.length} attendees with ${flattened.length} total contributions`,
+    });
   };
 
   const handleExtract = async () => {
@@ -473,15 +539,20 @@ Maria Santos, Communications Manager`;
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="imageUpload">📷 Or Upload Image</Label>
+                <Label htmlFor="fileUpload">📎 Or Upload File (Image, PDF, Excel)</Label>
                 <Input
-                  id="imageUpload"
+                  id="fileUpload"
                   type="file"
-                  accept="image/*"
-                  onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                  accept="image/*,.pdf,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                 />
+                {selectedFile && (
+                  <p className="text-sm text-primary">
+                    Selected: {selectedFile.name}
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground">
-                  Upload a photo of meeting notes, attendance list, or any document with participant information
+                  Upload an image, PDF, or Excel file containing meeting notes, attendance list, or participant information
                 </p>
               </div>
 
@@ -520,8 +591,8 @@ Maria Santos, Communications Manager`;
                   )}
                 </Button>
                 <Button
-                  onClick={handleImageExtract}
-                  disabled={isLoading || !selectedImage}
+                  onClick={handleFileExtract}
+                  disabled={isLoading || !selectedFile}
                   className="flex-1"
                   size="lg"
                   variant="secondary"
@@ -533,7 +604,7 @@ Maria Santos, Communications Manager`;
                     </>
                   ) : (
                     <>
-                      📷 Extract from Image
+                      📎 Extract from File
                     </>
                   )}
                 </Button>
