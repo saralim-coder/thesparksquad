@@ -2,35 +2,38 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import step1Screenshot from "@/assets/step1-screenshot.png";
 import step3Plumber from "@/assets/step3-plumber.png";
 import step3Gather from "@/assets/step3-gather.png";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[image:var(--gradient-hero)] text-white py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6 animate-fade-in">
             <Sparkles className="w-4 h-4" />
             <span className="text-sm font-medium">The Spark Squad</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
             Your Volunteer Data Hub
           </h1>
-          <p className="text-2xl md:text-3xl mb-8 text-white/90">
+          <p className="text-2xl md:text-3xl mb-8 text-white/90 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             Simplifying volunteer tracking for ground officers
           </p>
-          <p className="text-lg md:text-xl mb-10 text-white/80 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl mb-10 text-white/80 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
             An internal tool designed to help you spend less time on data entry and more time engaging with our volunteers. Automatically capture attendance, track contributions, and access complete volunteer histories.
           </p>
           <Button 
             size="lg" 
             onClick={() => navigate('/tools')}
-            className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 py-6"
+            className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 py-6 hover-scale animate-fade-in"
+            style={{ animationDelay: "0.4s" }}
           >
             Start Using The Tool
           </Button>
@@ -40,9 +43,11 @@ const Home = () => {
       {/* Mission Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)]">
+          <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 group">
             <div className="flex items-center gap-3 mb-4">
-              <Target className="w-8 h-8 text-primary" />
+              <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                <Target className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+              </div>
               <h2 className="text-3xl font-bold">What This Tool Does</h2>
             </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
@@ -86,12 +91,16 @@ const Home = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">How It Works</h2>
           
           <div className="grid md:grid-cols-2 gap-8">
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card 
+              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
+              onMouseEnter={() => setHoveredCard(0)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 0 ? 'scale-110 bg-primary/20' : ''}`}>
                   1
                 </div>
-                <h3 className="text-xl font-bold">Input Made Simple</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Input Made Simple</h3>
               </div>
               <img 
                 src={step1Screenshot} 
@@ -114,12 +123,16 @@ const Home = () => {
               </ul>
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card 
+              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
+              onMouseEnter={() => setHoveredCard(1)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 1 ? 'scale-110 bg-primary/20' : ''}`}>
                   2
                 </div>
-                <h3 className="text-xl font-bold">Automatic Organisation</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Automatic Organisation</h3>
               </div>
               <p className="text-muted-foreground mb-3">Your volunteer data is instantly structured into clear, actionable categories:</p>
               <ul className="space-y-2 text-muted-foreground">
@@ -138,12 +151,16 @@ const Home = () => {
               </ul>
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card 
+              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
+              onMouseEnter={() => setHoveredCard(2)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 2 ? 'scale-110 bg-primary/20' : ''}`}>
                   3
                 </div>
-                <h3 className="text-xl font-bold">Seamless Integration with Gather through Plumber Webhooks</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Seamless Integration with Gather through Plumber Webhooks</h3>
               </div>
               <p className="text-muted-foreground mb-4">
                 Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up, ensuring no volunteer or opportunity falls through the cracks.
@@ -155,12 +172,16 @@ const Home = () => {
               />
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card 
+              className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
+              onMouseEnter={() => setHoveredCard(3)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold transition-all duration-300 ${hoveredCard === 3 ? 'scale-110 bg-primary/20' : ''}`}>
                   4
                 </div>
-                <h3 className="text-xl font-bold">Instant Profile Access</h3>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Instant Profile Access</h3>
               </div>
               <p className="text-muted-foreground mb-4">
                 Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
@@ -184,40 +205,48 @@ const Home = () => {
           </p>
           
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-start gap-3 mb-3">
-                <Database className="w-6 h-6 text-primary flex-shrink-0" />
-                <h3 className="text-xl font-bold">Data Accessibility & Continuity</h3>
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <Database className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
+                </div>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Data Accessibility & Continuity</h3>
               </div>
               <p className="text-muted-foreground">
                 Instead of attendance data sitting in individual Excel files, centralised access means any staff member can instantly view historical participation patterns – crucial for handovers or when volunteers move between committees.
               </p>
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-start gap-3 mb-3">
-                <Sparkles className="w-6 h-6 text-primary flex-shrink-0" />
-                <h3 className="text-xl font-bold">Recognition & Engagement</h3>
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <Sparkles className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
+                </div>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Recognition & Engagement</h3>
               </div>
               <p className="text-muted-foreground">
                 With consolidated data, easily identify consistent contributors, spot declining participation early, and tailor recognition efforts – directly supporting your "recognise, spark, and nurture" objective.
               </p>
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-start gap-3 mb-3">
-                <Users className="w-6 h-6 text-primary flex-shrink-0" />
-                <h3 className="text-xl font-bold">Cross-CO Collaboration</h3>
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <Users className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
+                </div>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Cross-CO Collaboration</h3>
               </div>
               <p className="text-muted-foreground">
                 When volunteers participate across different COs, their full contribution profile becomes visible, enabling better coordination and avoiding volunteer burnout.
               </p>
             </Card>
 
-            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)]">
+            <Card className="p-6 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2 group">
               <div className="flex items-start gap-3 mb-3">
-                <TrendingUp className="w-6 h-6 text-primary flex-shrink-0" />
-                <h3 className="text-xl font-bold">Time Reallocation</h3>
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <TrendingUp className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
+                </div>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors duration-300">Time Reallocation</h3>
               </div>
               <p className="text-muted-foreground">
                 The time saved from manual data entry can be redirected to meaningful volunteer engagement activities – the real work that builds stronger communities.
@@ -250,7 +279,7 @@ const Home = () => {
           <Button 
             size="lg" 
             onClick={() => navigate('/tools')}
-            className="text-lg px-8 py-6 shadow-[var(--shadow-medium)]"
+            className="text-lg px-8 py-6 shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] hover-scale transition-all duration-300"
           >
             Start Using The Tool
           </Button>
