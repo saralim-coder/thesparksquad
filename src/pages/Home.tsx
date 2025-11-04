@@ -150,39 +150,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Why It Matters */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Use This?</h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            A singular platform that works with all your existing tools—no more scrambling for Excel sheets or juggling multiple formats. Centralised volunteer participation management means you spot consistent contributors faster, identify re-engagement opportunities, and maintain complete histories across committees and COs.
-          </p>
-          <p className="text-xl font-semibold mt-6 text-foreground">
-            Focus on what matters: managing volunteers' participation, nurturing community connections, and building stronger grassroots engagement.
-          </p>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Try It?</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Start using the tool to streamline your volunteer tracking. Enter your meeting notes, let the system handle the data extraction, and have everything sync to Gather automatically. More time for engagement, less time on admin.
-          </p>
-          <Button 
-            size="lg" 
-            onClick={() => navigate('/tools')}
-            className="text-lg px-8 py-6 shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] hover-scale transition-all duration-300"
-          >
-            Start Using The Tool
-          </Button>
-          <p className="text-sm text-muted-foreground mt-4">
-            Simple volunteer tracking for busy ground officers
-          </p>
-        </div>
-      </section>
     </div>
   );
 };
