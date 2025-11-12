@@ -49,11 +49,91 @@ const AITools = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const [nricErrors, setNricErrors] = useState<Record<number, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_IMAGE_DIMENSION = 1920;
+
+  const compressImage = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Resize if too large
+          if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+            if (width > height) {
+              height = Math.round((height * MAX_IMAGE_DIMENSION) / width);
+              width = MAX_IMAGE_DIMENSION;
+            } else {
+              width = Math.round((width * MAX_IMAGE_DIMENSION) / height);
+              height = MAX_IMAGE_DIMENSION;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.8 quality
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(compressedDataUrl);
+        };
+
+        img.onerror = () => reject(new Error('Failed to load image'));
+      };
+
+      reader.onerror = () => reject(new Error('Failed to read file'));
+    });
+  };
+
+  const handleFileChange = async (file: File | null) => {
+    if (!file) {
+      setSelectedFile(null);
+      setFilePreviewUrl(null);
+      return;
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "File too large",
+        description: `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+
+    // Generate preview for images
+    if (file.type.startsWith('image/')) {
+      const previewUrl = URL.createObjectURL(file);
+      setFilePreviewUrl(previewUrl);
+    } else {
+      setFilePreviewUrl(null);
+    }
+  };
 
   const handleFileExtract = async () => {
     if (!eventName.trim()) {
@@ -81,75 +161,86 @@ const AITools = () => {
       
       // Handle all file types by converting to base64 for AI processing
       // Images, PDFs, and Excel files can all be processed visually by the AI
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
+      let base64Data: string;
       
-      await new Promise((resolve, reject) => {
-        reader.onload = async () => {
-          try {
-            const base64Data = reader.result as string;
-            
-            // Determine file type for better prompt
-            let fileTypeDescription = "document";
-            if (fileType.startsWith('image/')) {
-              fileTypeDescription = "image";
-            } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
-              fileTypeDescription = "PDF document";
-            } else if (fileType.includes('spreadsheet') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-              fileTypeDescription = "Excel spreadsheet";
-            }
+      // Compress images for better performance
+      if (fileType.startsWith('image/')) {
+        toast({
+          title: "Optimizing image...",
+          description: "Compressing and preparing file for extraction",
+        });
+        base64Data = await compressImage(selectedFile);
+      } else {
+        // For PDFs and Excel, use original file
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        
+        base64Data = await new Promise((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+        });
+      }
+      
+      try {
+        
+        // Determine file type for better prompt
+        let fileTypeDescription = "document";
+        if (fileType.startsWith('image/')) {
+          fileTypeDescription = "image";
+        } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
+          fileTypeDescription = "PDF document";
+        } else if (fileType.includes('spreadsheet') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+          fileTypeDescription = "Excel spreadsheet";
+        }
 
+        toast({
+          title: "Processing file...",
+          description: `Analyzing ${fileTypeDescription} and extracting volunteer data`,
+        });
+        
+        const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+          body: { 
+            imageData: base64Data, 
+            eventName,
+            fileType: fileTypeDescription 
+          },
+        });
+
+        if (error) {
+          console.error("Extraction error:", error);
+          if (error.message?.includes("429") || error.message?.includes("Rate limit")) {
             toast({
-              title: "Processing file...",
-              description: `Analyzing ${fileTypeDescription} and extracting volunteer data`,
+              title: "Rate limit exceeded",
+              description: "Please try again in a few moments",
+              variant: "destructive",
             });
-            
-            const { data, error } = await supabase.functions.invoke("extract-combined-data", {
-              body: { 
-                imageData: base64Data, 
-                eventName,
-                fileType: fileTypeDescription 
-              },
+          } else if (error.message?.includes("402") || error.message?.includes("Credits")) {
+            toast({
+              title: "Credits required",
+              description: "Please add credits to your workspace to continue using AI features",
+              variant: "destructive",
             });
-
-            if (error) {
-              console.error("Extraction error:", error);
-              if (error.message?.includes("429") || error.message?.includes("Rate limit")) {
-                toast({
-                  title: "Rate limit exceeded",
-                  description: "Please try again in a few moments",
-                  variant: "destructive",
-                });
-              } else if (error.message?.includes("402") || error.message?.includes("Credits")) {
-                toast({
-                  title: "Credits required",
-                  description: "Please add credits to your workspace to continue using AI features",
-                  variant: "destructive",
-                });
-              } else if (error.message?.includes("Unable to process")) {
-                toast({
-                  title: "File processing failed",
-                  description: "Please ensure your file contains readable text, tables, or clear images. Try a different file format if the issue persists.",
-                  variant: "destructive",
-                });
-              } else {
-                toast({
-                  title: "Extraction failed",
-                  description: error.message || "Unable to extract data from file",
-                  variant: "destructive",
-                });
-              }
-              return;
-            }
-
-            processExtractedData(data);
-            resolve(null);
-          } catch (error) {
-            reject(error);
+          } else if (error.message?.includes("Unable to process")) {
+            toast({
+              title: "File processing failed",
+              description: "Please ensure your file contains readable text, tables, or clear images. Try a different file format if the issue persists.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Extraction failed",
+              description: error.message || "Unable to extract data from file",
+              variant: "destructive",
+            });
           }
-        };
-        reader.onerror = reject;
-      });
+          return;
+        }
+
+        processExtractedData(data);
+      } catch (error) {
+        console.error("Error processing file:", error);
+        throw error;
+      }
     } catch (error) {
       console.error("Error extracting data from file:", error);
       toast({
@@ -508,15 +599,29 @@ Maria Santos, Communications Manager`;
                   id="fileUpload"
                   type="file"
                   accept="image/*,.pdf,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
                 />
                 {selectedFile && (
-                  <p className="text-sm text-primary">
-                    Selected: {selectedFile.name}
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-primary">
+                      <span className="font-medium">Selected: {selectedFile.name}</span>
+                      <span className="text-muted-foreground">
+                        ({(selectedFile.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                    {filePreviewUrl && (
+                      <div className="border rounded-lg p-2 bg-muted/50">
+                        <img 
+                          src={filePreviewUrl} 
+                          alt="File preview" 
+                          className="max-w-full h-auto max-h-[200px] object-contain mx-auto rounded"
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
                 <p className="text-sm text-muted-foreground">
-                  Upload images (photos, WhatsApp screenshots), PDF documents, or Excel spreadsheets. Our AI will analyze them and extract volunteer data with improved accuracy for all file types.
+                  Upload images (photos, WhatsApp screenshots), PDF documents, or Excel spreadsheets. Files up to 10MB. Images will be automatically optimized for faster processing.
                 </p>
               </div>
 
