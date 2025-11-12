@@ -159,22 +159,113 @@ const AITools = () => {
       const fileType = selectedFile.type;
       const fileName = selectedFile.name.toLowerCase();
       
-      // Handle all file types by converting to base64 for AI processing
+      // Branch by file type to choose best extraction path
+      const isPdf = fileType === 'application/pdf' || fileName.endsWith('.pdf');
+      const isExcel = fileType.includes('spreadsheet') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileType === 'application/vnd.ms-excel' || fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+      // PDF: extract text with pdfjs and send as meetingNotes
+      if (isPdf) {
+        toast({ title: 'Reading PDF…', description: 'Extracting text from pages for analysis' });
+        try {
+          const [pdfjsModule, worker] = await Promise.all([
+            import('pdfjs-dist'),
+            import('pdfjs-dist/build/pdf.worker.min.js?url'),
+          ]);
+          const { getDocument, GlobalWorkerOptions } = pdfjsModule as any;
+          GlobalWorkerOptions.workerSrc = (worker as any).default;
+
+          const arrayBuffer = await selectedFile.arrayBuffer();
+          const pdf = await getDocument({ data: arrayBuffer }).promise;
+          let text = '';
+          for (let p = 1; p <= pdf.numPages; p++) {
+            const page = await pdf.getPage(p);
+            const content = await page.getTextContent();
+            const pageText = (content.items || []).map((it: any) => it.str).join(' ');
+            text += pageText + '\n';
+          }
+
+          const { data, error } = await supabase.functions.invoke('extract-combined-data', {
+            body: {
+              meetingNotes: `Extracted from PDF ${selectedFile.name}:\n\n${text}`,
+              eventName,
+            },
+          });
+
+          if (error) {
+            console.error('Extraction error (PDF):', error);
+            if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
+              toast({ title: 'Rate limit exceeded', description: 'Please try again in a few moments', variant: 'destructive' });
+            } else if (error.message?.includes('402') || error.message?.includes('Credits')) {
+              toast({ title: 'Credits required', description: 'Please add credits to your workspace to continue using AI features', variant: 'destructive' });
+            } else {
+              toast({ title: 'Extraction failed', description: error.message || 'Unable to extract data from PDF', variant: 'destructive' });
+            }
+            return;
+          }
+          processExtractedData(data);
+          return;
+        } catch (pdfError) {
+          console.error('PDF read error:', pdfError);
+          toast({ title: 'PDF processing failed', description: 'Could not read this PDF. Please try another file.', variant: 'destructive' });
+          return;
+        }
+      }
+
+      // Excel: parse sheets to CSV text and send as meetingNotes
+      if (isExcel) {
+        toast({ title: 'Reading spreadsheet…', description: 'Parsing sheets for analysis' });
+        try {
+          const XLSX: any = await import('xlsx');
+          const wb = XLSX.read(await selectedFile.arrayBuffer(), { type: 'array' });
+          let text = '';
+          for (const name of wb.SheetNames) {
+            const sheet = wb.Sheets[name];
+            const csv = XLSX.utils.sheet_to_csv(sheet);
+            text += `Sheet: ${name}\n${csv}\n`;
+          }
+
+          const { data, error } = await supabase.functions.invoke('extract-combined-data', {
+            body: {
+              meetingNotes: `Extracted from spreadsheet ${selectedFile.name}:\n\n${text}`,
+              eventName,
+            },
+          });
+
+          if (error) {
+            console.error('Extraction error (Excel):', error);
+            if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
+              toast({ title: 'Rate limit exceeded', description: 'Please try again in a few moments', variant: 'destructive' });
+            } else if (error.message?.includes('402') || error.message?.includes('Credits')) {
+              toast({ title: 'Credits required', description: 'Please add credits to your workspace to continue using AI features', variant: 'destructive' });
+            } else {
+              toast({ title: 'Extraction failed', description: error.message || 'Unable to extract data from spreadsheet', variant: 'destructive' });
+            }
+            return;
+          }
+          processExtractedData(data);
+          return;
+        } catch (xlsxError) {
+          console.error('Excel read error:', xlsxError);
+          toast({ title: 'Spreadsheet processing failed', description: 'Could not read this spreadsheet. Please try another file.', variant: 'destructive' });
+          return;
+        }
+      }
+
+      // Images: compress and send as imageData
       // Images, PDFs, and Excel files can all be processed visually by the AI
       let base64Data: string;
       
       // Compress images for better performance
       if (fileType.startsWith('image/')) {
         toast({
-          title: "Optimizing image...",
-          description: "Compressing and preparing file for extraction",
+          title: 'Optimizing image...',
+          description: 'Compressing and preparing file for extraction',
         });
         base64Data = await compressImage(selectedFile);
       } else {
-        // For PDFs and Excel, use original file
+        // Fallback: treat as generic document via base64
         const reader = new FileReader();
         reader.readAsDataURL(selectedFile);
-        
         base64Data = await new Promise((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string);
           reader.onerror = reject;
@@ -182,23 +273,13 @@ const AITools = () => {
       }
       
       try {
-        
         // Determine file type for better prompt
-        let fileTypeDescription = "document";
-        if (fileType.startsWith('image/')) {
-          fileTypeDescription = "image";
-        } else if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
-          fileTypeDescription = "PDF document";
-        } else if (fileType.includes('spreadsheet') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-          fileTypeDescription = "Excel spreadsheet";
-        }
+        let fileTypeDescription = 'document';
+        if (fileType.startsWith('image/')) fileTypeDescription = 'image';
 
-        toast({
-          title: "Processing file...",
-          description: `Analyzing ${fileTypeDescription} and extracting volunteer data`,
-        });
+        toast({ title: 'Processing file...', description: `Analyzing ${fileTypeDescription} and extracting volunteer data` });
         
-        const { data, error } = await supabase.functions.invoke("extract-combined-data", {
+        const { data, error } = await supabase.functions.invoke('extract-combined-data', {
           body: { 
             imageData: base64Data, 
             eventName,
@@ -207,38 +288,22 @@ const AITools = () => {
         });
 
         if (error) {
-          console.error("Extraction error:", error);
-          if (error.message?.includes("429") || error.message?.includes("Rate limit")) {
-            toast({
-              title: "Rate limit exceeded",
-              description: "Please try again in a few moments",
-              variant: "destructive",
-            });
-          } else if (error.message?.includes("402") || error.message?.includes("Credits")) {
-            toast({
-              title: "Credits required",
-              description: "Please add credits to your workspace to continue using AI features",
-              variant: "destructive",
-            });
-          } else if (error.message?.includes("Unable to process")) {
-            toast({
-              title: "File processing failed",
-              description: "Please ensure your file contains readable text, tables, or clear images. Try a different file format if the issue persists.",
-              variant: "destructive",
-            });
+          console.error('Extraction error:', error);
+          if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
+            toast({ title: 'Rate limit exceeded', description: 'Please try again in a few moments', variant: 'destructive' });
+          } else if (error.message?.includes('402') || error.message?.includes('Credits')) {
+            toast({ title: 'Credits required', description: 'Please add credits to your workspace to continue using AI features', variant: 'destructive' });
+          } else if (error.message?.includes('Unable to process')) {
+            toast({ title: 'File processing failed', description: 'Please ensure your file contains readable text, tables, or clear images. Try a different file format if the issue persists.', variant: 'destructive' });
           } else {
-            toast({
-              title: "Extraction failed",
-              description: error.message || "Unable to extract data from file",
-              variant: "destructive",
-            });
+            toast({ title: 'Extraction failed', description: error.message || 'Unable to extract data from file', variant: 'destructive' });
           }
           return;
         }
 
         processExtractedData(data);
       } catch (error) {
-        console.error("Error processing file:", error);
+        console.error('Error processing file:', error);
         throw error;
       }
     } catch (error) {
