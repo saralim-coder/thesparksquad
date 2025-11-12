@@ -721,7 +721,7 @@ Maria Santos, Communications Manager`;
                   className="font-mono text-sm"
                 />
                 <p className="text-sm text-muted-foreground">
-                  AI will extract names, designations, NRICs and key contribution highlights. If the data is not available, it will be blank.
+                  AI will extract names, designations, NRICs (last 3 digits + letter, e.g., 567A) and key contribution highlights. If the data is not available, it will be blank.
                 </p>
               </div>
 
