@@ -167,15 +167,13 @@ const AITools = () => {
       if (isPdf) {
         toast({ title: 'Reading PDF…', description: 'Extracting text from pages for analysis' });
         try {
-          const [pdfjsModule, worker] = await Promise.all([
-            import('pdfjs-dist'),
-            import('pdfjs-dist/build/pdf.worker.min.js?url'),
-          ]);
-          const { getDocument, GlobalWorkerOptions } = pdfjsModule as any;
-          GlobalWorkerOptions.workerSrc = (worker as any).default;
+          const pdfjs = await import('pdfjs-dist');
+          
+          // Use CDN-hosted worker
+          pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
           const arrayBuffer = await selectedFile.arrayBuffer();
-          const pdf = await getDocument({ data: arrayBuffer }).promise;
+          const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
           let text = '';
           for (let p = 1; p <= pdf.numPages; p++) {
             const page = await pdf.getPage(p);
