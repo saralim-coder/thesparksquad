@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ExtractedData {
   name: string;
@@ -53,6 +54,7 @@ const AITools = () => {
   const [extractedData, setExtractedData] = useState<ExtractedData[]>([]);
   const [flattenedRows, setFlattenedRows] = useState<FlattenedRow[]>([]);
   const [nricErrors, setNricErrors] = useState<Record<number, string>>({});
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -486,7 +488,17 @@ const AITools = () => {
     }
 
     // Determine which rows to send
-    const rowsToSend = rowIndex !== undefined ? [flattenedRows[rowIndex]] : flattenedRows;
+    let rowsToSend: FlattenedRow[];
+    if (rowIndex !== undefined) {
+      // Single row
+      rowsToSend = [flattenedRows[rowIndex]];
+    } else if (selectedRows.size > 0) {
+      // Selected rows only
+      rowsToSend = flattenedRows.filter((_, idx) => selectedRows.has(idx));
+    } else {
+      // All rows
+      rowsToSend = flattenedRows;
+    }
     
     // Validate NRICs are present
     const missingNRICs = rowsToSend.filter(row => !row.nric?.trim());
@@ -803,14 +815,25 @@ Maria Santos, Communications Manager`;
             {flattenedRows.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Extracted Data</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold">Extracted Data</h3>
+                    {selectedRows.size > 0 && (
+                      <Badge variant="secondary">{selectedRows.size} selected</Badge>
+                    )}
+                  </div>
                   <Button
                     onClick={() => sendWebhook()}
                     variant="secondary"
-                    disabled={flattenedRows.some(row => !row.nric?.trim()) || Object.keys(nricErrors).length > 0}
+                    disabled={
+                      (selectedRows.size === 0 && flattenedRows.some(row => !row.nric?.trim())) ||
+                      (selectedRows.size > 0 && Array.from(selectedRows).some(idx => !flattenedRows[idx].nric?.trim() || nricErrors[idx])) ||
+                      Object.keys(nricErrors).length > 0
+                    }
                   >
-                    Send All to Webhook
-                    {(flattenedRows.some(row => !row.nric?.trim()) || Object.keys(nricErrors).length > 0) && (
+                    {selectedRows.size > 0 ? `Send ${selectedRows.size} Selected` : 'Send All to Webhook'}
+                    {((selectedRows.size === 0 && flattenedRows.some(row => !row.nric?.trim())) ||
+                      (selectedRows.size > 0 && Array.from(selectedRows).some(idx => !flattenedRows[idx].nric?.trim())) ||
+                      Object.keys(nricErrors).length > 0) && (
                       <span className="ml-2 text-xs">
                         ({Object.keys(nricErrors).length > 0 ? 'Invalid NRICs' : 'Missing NRICs'})
                       </span>
@@ -821,6 +844,18 @@ Maria Santos, Communications Manager`;
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={selectedRows.size === flattenedRows.length}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedRows(new Set(flattenedRows.map((_, idx) => idx)));
+                              } else {
+                                setSelectedRows(new Set());
+                              }
+                            }}
+                          />
+                        </TableHead>
                         <TableHead className="w-12">No.</TableHead>
                         <TableHead>Event Name</TableHead>
                         <TableHead>Event Date</TableHead>
@@ -834,6 +869,20 @@ Maria Santos, Communications Manager`;
                     <TableBody>
                       {flattenedRows.map((row, index) => (
                         <TableRow key={index}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedRows.has(index)}
+                              onCheckedChange={(checked) => {
+                                const newSelected = new Set(selectedRows);
+                                if (checked) {
+                                  newSelected.add(index);
+                                } else {
+                                  newSelected.delete(index);
+                                }
+                                setSelectedRows(newSelected);
+                              }}
+                            />
+                          </TableCell>
                           <TableCell className="font-medium">{index + 1}</TableCell>
                           <TableCell>
                             <div className="min-w-[150px] px-2 py-1 bg-muted/50 rounded text-sm">
