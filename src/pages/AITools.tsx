@@ -641,10 +641,10 @@ const AITools = () => {
   };
 
   const exampleNotes = `Attended:
-Sara Chen, Volunteer Coordinator, S1234567A - Helped set up food distribution area
-John Tan, Event Lead, T9876543B - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
+Sara Chen, Volunteer Coordinator, 567A - Helped set up food distribution area
+John Tan, Event Lead, 543B - Organized 25 volunteers for the community clean-up, collected 150kg of recyclables
 Mike Wong - Community Outreach - Led senior citizens tech literacy session with 15 participants
-Emily Koh (Fundraising) S7654321C - Coordinated donation drive raising $5,000 for local shelter
+Emily Koh (Fundraising) 321C - Coordinated donation drive raising $5,000 for local shelter
 
 Not attended:
 David Lee, Logistics
