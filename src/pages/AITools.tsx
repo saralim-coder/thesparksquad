@@ -41,7 +41,7 @@ interface FlattenedRow {
   highlight: string;
 }
 
-const nricSchema = z.string().trim().regex(/^[STFGM]\d{7}[A-Z]$/i, { message: "Invalid NRIC format (e.g., S1234567A)" }).max(9, { message: "NRIC must be 9 characters" });
+const nricSchema = z.string().trim().regex(/^\d{3}[A-Z]$/i, { message: "Invalid format (e.g., 567A)" }).length(4, { message: "Must be exactly 4 characters" });
 
 const AITools = () => {
   const [eventName, setEventName] = useState("");
@@ -769,7 +769,7 @@ Maria Santos, Communications Manager`;
                     Data will be sent as JSON: {`{ "eventName": "...", "data": [...] }`}
                   </p>
                   <p className="text-sm text-destructive font-medium">
-                    ⚠️ NRIC is required for all rows before sending to case system
+                    ⚠️ NRIC (last 3 digits + letter) is required for all rows before sending
                   </p>
                 </div>
 
@@ -913,13 +913,14 @@ Maria Santos, Communications Manager`;
                           <TableCell>
                             <div className="space-y-1">
                               <Input
-                                placeholder="Enter NRIC (required)"
+                                placeholder="e.g., 567A"
                                 value={row.nric || ""}
-                                onChange={(e) => handleFieldChange(index, 'nric', e.target.value)}
-                                className={`min-w-[200px] ${!row.nric?.trim() || nricErrors[index] ? 'border-destructive' : ''}`}
+                                onChange={(e) => handleFieldChange(index, 'nric', e.target.value.toUpperCase())}
+                                className={`min-w-[120px] ${!row.nric?.trim() || nricErrors[index] ? 'border-destructive' : ''}`}
+                                maxLength={4}
                               />
                               {!row.nric?.trim() && (
-                                <p className="text-xs text-destructive">Required for sending</p>
+                                <p className="text-xs text-destructive">Required (last 3 digits + letter)</p>
                               )}
                               {row.nric?.trim() && nricErrors[index] && (
                                 <p className="text-xs text-destructive">{nricErrors[index]}</p>
