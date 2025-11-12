@@ -518,6 +518,66 @@ const AITools = () => {
       return;
     }
 
+    // If sending all rows, send them one by one sequentially
+    if (rowIndex === undefined && rowsToSend.length > 1) {
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < rowsToSend.length; i++) {
+        const row = rowsToSend[i];
+        try {
+          const { data, error } = await supabase.functions.invoke('forward-plumber-webhook', {
+            body: {
+              webhookUrl,
+              payload: {
+                eventName,
+                eventDate: eventDate ? format(eventDate, "yyyy-MM-dd") : undefined,
+                data: [row],
+                timestamp: new Date().toISOString(),
+                triggered_from: window.location.origin,
+              },
+            },
+          });
+
+          if (error) throw error;
+
+          if (!data?.ok) {
+            throw new Error(data?.message || `Upstream error (status ${data?.status})`);
+          }
+
+          successCount++;
+          
+          toast({
+            title: `Sent ${i + 1}/${rowsToSend.length}`,
+            description: `Successfully sent: ${row.name}`,
+          });
+
+          // Small delay between requests to avoid rate limiting
+          if (i < rowsToSend.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        } catch (error) {
+          console.error(`Error sending row ${i + 1}:`, error);
+          failCount++;
+          toast({
+            title: `Failed to send row ${i + 1}`,
+            description: error instanceof Error ? error.message : 'Unable to send data',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      // Final summary toast
+      if (successCount > 0) {
+        toast({
+          title: 'Batch send complete',
+          description: `Successfully sent ${successCount} out of ${rowsToSend.length} rows${failCount > 0 ? `. ${failCount} failed.` : '.'}`,
+        });
+      }
+      return;
+    }
+
+    // Single row send
     try {
       const { data, error } = await supabase.functions.invoke('forward-plumber-webhook', {
         body: {
@@ -540,10 +600,7 @@ const AITools = () => {
 
       toast({
         title: 'Data sent successfully',
-        description:
-          rowIndex !== undefined
-            ? `Row ${rowIndex + 1} sent to GatherSG via Plumber webhook.`
-            : `All ${rowsToSend.length} rows sent to GatherSG via Plumber webhook.`,
+        description: `Row ${rowIndex! + 1} sent to GatherSG via Plumber webhook.`,
       });
     } catch (error) {
       console.error('Webhook error:', error);
