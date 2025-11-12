@@ -113,20 +113,31 @@ const AITools = () => {
             });
 
             if (error) {
-              if (error.message.includes("429")) {
+              console.error("Extraction error:", error);
+              if (error.message?.includes("429") || error.message?.includes("Rate limit")) {
                 toast({
                   title: "Rate limit exceeded",
                   description: "Please try again in a few moments",
                   variant: "destructive",
                 });
-              } else if (error.message.includes("402")) {
+              } else if (error.message?.includes("402") || error.message?.includes("Credits")) {
                 toast({
                   title: "Credits required",
-                  description: "Please add credits to your workspace",
+                  description: "Please add credits to your workspace to continue using AI features",
+                  variant: "destructive",
+                });
+              } else if (error.message?.includes("Unable to process")) {
+                toast({
+                  title: "File processing failed",
+                  description: "Please ensure your file contains readable text, tables, or clear images. Try a different file format if the issue persists.",
                   variant: "destructive",
                 });
               } else {
-                throw error;
+                toast({
+                  title: "Extraction failed",
+                  description: error.message || "Unable to extract data from file",
+                  variant: "destructive",
+                });
               }
               return;
             }

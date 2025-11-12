@@ -93,14 +93,16 @@ Return JSON in this exact structure:
 
     let messages;
     if (imageData) {
-      // Ensure the image data is in correct format
-      let imageUrl = imageData;
-      if (!imageData.startsWith('data:') && !imageData.startsWith('http')) {
+      // Validate image data format
+      if (!imageData.startsWith('data:')) {
+        console.error("Invalid image data format - must be a data URL");
         return new Response(
-          JSON.stringify({ error: "Invalid image data format. Please ensure the image is properly encoded." }),
+          JSON.stringify({ error: "Invalid file format. Please ensure the file is properly encoded." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      
+      console.log(`Processing ${fileType || 'file'} with data URL of length: ${imageData.length}`);
       
       const fileTypeText = fileType || "image or document";
       messages = [
@@ -108,8 +110,15 @@ Return JSON in this exact structure:
         { 
           role: "user", 
           content: [
-            { type: "text", text: `Event: ${eventName}\n\nPlease extract attendance and contribution information from this ${fileTypeText}. Pay special attention to any tabular data, lists, or structured information.` },
-            { type: "image_url", image_url: { url: imageUrl } }
+            { type: "text", text: `Event: ${eventName}\n\nPlease extract volunteer attendance and contribution information from this ${fileTypeText}. Look for:
+- Names of attendees
+- Their roles or designations (if mentioned)
+- NRIC numbers (if present)
+- Specific accomplishments or contributions they made
+- Any tables, lists, or structured data
+
+Extract ONLY the information that is explicitly stated in the document.` },
+            { type: "image_url", image_url: { url: imageData } }
           ]
         }
       ];
@@ -127,7 +136,7 @@ Return JSON in this exact structure:
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages,
         response_format: { type: "json_object" },
       }),
@@ -135,7 +144,7 @@ Return JSON in this exact structure:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI API error:", errorText);
+      console.error("AI API error response:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -151,17 +160,35 @@ Return JSON in this exact structure:
         );
       }
       
-      throw new Error(`AI API error: ${response.status}`);
+      if (response.status === 400) {
+        // Handle bad request errors from image processing
+        return new Response(
+          JSON.stringify({ error: "Unable to process this file. Please ensure it's a valid image, PDF, or Excel file with readable content." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      throw new Error(`AI API error: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
+    console.log("AI response received, processing content...");
+    
     let content = result.choices[0].message.content;
     
     // Strip markdown code blocks if present
     content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
-    const extractedData = JSON.parse(content);
+    let extractedData;
+    try {
+      extractedData = JSON.parse(content);
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", content.substring(0, 200));
+      throw new Error("Invalid response format from AI");
+    }
 
+    console.log(`Successfully extracted ${extractedData.extractedData?.length || 0} attendees`);
+    
     return new Response(JSON.stringify(extractedData), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
