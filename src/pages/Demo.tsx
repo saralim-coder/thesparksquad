@@ -2,9 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, CheckCircle2, Database, Users, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import step1Screenshot from "@/assets/step1-screenshot.png";
-import step3Plumber from "@/assets/step3-plumber.png";
-import step3Gather from "@/assets/step3-gather.png";
 
 const Demo = () => {
   const navigate = useNavigate();
@@ -35,13 +32,6 @@ const Demo = () => {
                   1
                 </div>
                 <h3 className="text-2xl font-bold">Input Made Simple</h3>
-              </div>
-              <div className="mb-6">
-                <img 
-                  src={step1Screenshot} 
-                  alt="Input interface showing event name, meeting notes, and upload options" 
-                  className="w-full rounded-lg shadow-md"
-                />
               </div>
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-start gap-2">
@@ -93,11 +83,6 @@ const Demo = () => {
               <p className="text-muted-foreground mb-6">
                 Once organised, volunteer information is automatically sent to your Gather case management system through Plumber webhooks for comprehensive tracking and follow-up.
               </p>
-              <img 
-                src={step3Plumber} 
-                alt="Plumber webhook configuration showing successful data transmission" 
-                className="w-full rounded-lg shadow-md"
-              />
             </Card>
 
             <Card className="p-8 bg-[image:var(--gradient-card)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-500 hover:-translate-y-2">
@@ -110,11 +95,6 @@ const Demo = () => {
               <p className="text-muted-foreground mb-6">
                 Staff can easily search and filter the complete history of any volunteer by simply entering their NRIC. Access their customer profile to view their entire journey, contributions, and engagement patterns at a glance.
               </p>
-              <img 
-                src={step3Gather} 
-                alt="Gather case management system displaying complete volunteer profile and history" 
-                className="w-full rounded-lg shadow-md"
-              />
             </Card>
           </div>
         </div>

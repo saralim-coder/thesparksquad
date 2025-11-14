@@ -3,9 +3,6 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Upload, Database, Search, CheckCircle2, Users, Target, TrendingUp, AlertCircle } from "lucide-react";
 import { useState } from "react";
-import step1Screenshot from "@/assets/step1-screenshot.png";
-import step3Plumber from "@/assets/step3-plumber.png";
-import step3Gather from "@/assets/step3-gather.png";
 
 const Home = () => {
   const navigate = useNavigate();
